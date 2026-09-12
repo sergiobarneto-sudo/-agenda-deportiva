@@ -594,6 +594,22 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
 }
 .manual-refresh-btn:active{transform:scale(.99)}
 
+
+.github-update-note{
+  margin:-2px 0 10px;
+  text-align:center;
+  font-size:.68rem;
+  color:#667085;
+}
+.data-error{
+  padding:12px;
+  border:1px solid #fecaca;
+  background:#fff7f7;
+  border-radius:10px;
+  color:#b42318;
+  font-size:.76rem;
+}
+
 </style>
 </head>
 <body>
@@ -4138,9 +4154,9 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
 <h2>Resultados · jornada en juego</h2>
 <div class="live-refresh-bar">
   <span><span class="live-refresh-dot"></span>Datos actualizados</span>
-  <span class="live-refresh-time" id="liveRefreshTime">13/09/2026 · 00:58</span>
+  <span class="live-refresh-time" id="liveRefreshTime">Cargando datos publicados…</span>
 </div>
-<button id="manualRefreshBtn" class="manual-refresh-btn" type="button">↻ Actualizar datos</button>
+<button id="manualRefreshBtn" class="manual-refresh-btn" type="button">↻ Actualizar datos</button><div class="github-update-note" id="githubUpdateNote">Datos publicados automáticamente por GitHub.</div>
 <div class="note">Solo se muestran los partidos en directo y los partidos ya finalizados de la jornada que se está disputando actualmente. No aparecen jornadas anteriores ni futuras.</div>
 <details class="league-results" open>
       <summary>LaLiga · Jornada 5 · 4 finalizados</summary>
@@ -5516,154 +5532,221 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
 </script>
 
 
+
+
+
+
+
+
+
+
+
 <script>
 (function(){
-  const STANDINGS = {
-    "LaLiga":"esp.1",
-    "Premier League":"eng.1",
-    "Bundesliga":"ger.1",
-    "Serie A":"ita.1",
-    "Ligue 1":"fra.1",
-    "Champions League":"uefa.champions",
-    "Europa League":"uefa.europa",
-    "Conference League":"uefa.europa.conf"
-  };
-  const standingCache={};
+  const DATA_URL = "./data.json";
 
-  function sEsc(s){
-    return String(s??"").replace(/[&<>"']/g,c=>({
+  const leagueMeta = {
+    laliga:{name:"LaLiga", tv:"Movistar Plus+ / DAZN LALIGA · según partido"},
+    premier:{name:"Premier League", tv:"DAZN"},
+    bundesliga:{name:"Bundesliga", tv:"DAZN"},
+    seriea:{name:"Serie A", tv:"DAZN"},
+    ligue1:{name:"Ligue 1", tv:"DAZN"}
+  };
+
+  const viewSelector = {
+    laliga:".view-laliga",
+    premier:".view-premier-league",
+    bundesliga:".view-bundesliga",
+    seriea:".view-serie-a",
+    ligue1:".view-ligue-1"
+  };
+
+  function esc(s){
+    return String(s ?? "").replace(/[&<>"']/g,c=>({
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
     })[c]);
   }
 
-  function statValue(stats,names){
-    for(const n of names){
-      const s=(stats||[]).find(x=>x.name===n || x.abbreviation===n);
-      if(s && s.value!==undefined) return s.value;
-    }
-    return "";
+  function fmtDate(iso){
+    const d=new Date(iso);
+    return new Intl.DateTimeFormat("es-ES",{
+      timeZone:"Europe/Madrid",day:"2-digit",month:"2-digit",year:"numeric"
+    }).format(d);
+  }
+  function fmtTime(iso){
+    const d=new Date(iso);
+    return new Intl.DateTimeFormat("es-ES",{
+      timeZone:"Europe/Madrid",hour:"2-digit",minute:"2-digit",hour12:false
+    }).format(d);
   }
 
-  function normalizeStandings(data){
-    // ESPN standings responses can use children[] or a direct standings object.
-    const groups = data.children || [];
-    let entries=[];
-    if(groups.length){
-      for(const g of groups){
-        const e=g.standings?.entries || [];
-        if(e.length>entries.length) entries=e;
-      }
-    } else {
-      entries=data.standings?.entries || [];
-    }
-    return entries.map((e,i)=>{
-      const s=e.stats||[];
-      return {
-        pos: statValue(s,["rank","RK"]) || i+1,
-        team:e.team?.displayName || e.team?.shortDisplayName || "Equipo",
-        logo:e.team?.logos?.[0]?.href || "",
-        pj:statValue(s,["gamesPlayed","GP"]),
-        g:statValue(s,["wins","W"]),
-        e:statValue(s,["ties","draws","D"]),
-        p:statValue(s,["losses","L"]),
-        gf:statValue(s,["pointsFor","goalsFor","GF"]),
-        gc:statValue(s,["pointsAgainst","goalsAgainst","GA"]),
-        dg:statValue(s,["pointDifferential","goalDifference","GD"]),
-        pts:statValue(s,["points","PTS"])
-      };
-    });
+  function matchCard(m){
+    const meta=leagueMeta[m.key] || {name:m.league||"",tv:m.tv||""};
+    const round=m.round ? `Jornada ${m.round}` : "Horario confirmado/provisional";
+    return `<article class="match-card">
+      <div class="when">
+        <strong>${esc(fmtDate(m.date))}</strong>
+        <span>${esc(fmtTime(m.date))}</span>
+        <small>${esc(round)}</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ${esc(m.key)}">${esc(meta.name)}</span>
+        <div class="teams"><b>${esc(m.home)}</b><span>VS</span><b>${esc(m.away)}</b></div>
+      </div>
+      <div class="tv">📺 ${esc(m.tv || meta.tv)}</div>
+    </article>`;
   }
 
-  async function getStandings(name){
-    if(standingCache[name]) return standingCache[name];
-    const slug=STANDINGS[name];
-    if(!slug) return [];
-    const urls=[
-      `https://site.api.espn.com/apis/v2/sports/soccer/${slug}/standings`,
-      `https://site.web.api.espn.com/apis/v2/sports/soccer/${slug}/standings?region=es&lang=es`
-    ];
-    for(const url of urls){
-      try{
-        const r=await fetch(url,{cache:"no-store"});
-        if(!r.ok) continue;
-        const data=await r.json();
-        const rows=normalizeStandings(data);
-        if(rows.length){
-          standingCache[name]=rows;
-          return rows;
-        }
-      }catch(e){}
-    }
-    return [];
+  function resultCard(m){
+    const live=!!m.live;
+    const state=live ? (m.clock ? `● EN DIRECTO · ${m.clock}` : "● EN DIRECTO") : "FINAL";
+    return `<article class="result-row${live?" live":""}">
+      <div class="when">
+        <strong>${esc(fmtDate(m.date))}</strong>
+        <span>${esc(fmtTime(m.date))}</span>
+        <small class="${live?"live-text":""}">${esc(state)}</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ${esc(m.key)}">${esc(m.league)}</span>
+        <div class="teams">
+          <div class="team-line"><b>${esc(m.home)}</b><span class="team-score">${esc(m.homeScore)}</span></div>
+          <div class="team-line"><b>${esc(m.away)}</b><span class="team-score">${esc(m.awayScore)}</span></div>
+        </div>
+      </div>
+      <div class="score">${esc(m.homeScore)} - ${esc(m.awayScore)}</div>
+    </article>`;
   }
 
   function standingTable(rows){
-    if(!rows.length){
-      return '<div class="standing-error">Clasificación no disponible en este momento.</div>';
-    }
+    if(!rows || !rows.length) return '<div class="standing-error">Clasificación no disponible.</div>';
     return `<div class="standing-wrap"><table class="standing-table">
-      <thead><tr>
-        <th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th><th>PTS</th>
-      </tr></thead>
+      <thead><tr><th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th><th>PTS</th></tr></thead>
       <tbody>${rows.map(r=>`<tr>
-        <td class="standing-pos">${sEsc(r.pos)}</td>
-        <td><span class="standing-team">${r.logo?`<img src="${sEsc(r.logo)}" alt="">`:""}${sEsc(r.team)}</span></td>
-        <td>${sEsc(r.pj)}</td><td>${sEsc(r.g)}</td><td>${sEsc(r.e)}</td><td>${sEsc(r.p)}</td>
-        <td>${sEsc(r.gf)}</td><td>${sEsc(r.gc)}</td><td>${sEsc(r.dg)}</td>
-        <td class="standing-pts">${sEsc(r.pts)}</td>
-      </tr>`).join("")}</tbody>
-    </table></div>`;
+        <td class="standing-pos">${esc(r.pos)}</td>
+        <td><span class="standing-team">${r.logo?`<img src="${esc(r.logo)}" alt="">`:""}${esc(r.team)}</span></td>
+        <td>${esc(r.pj)}</td><td>${esc(r.g)}</td><td>${esc(r.e)}</td><td>${esc(r.p)}</td>
+        <td>${esc(r.gf)}</td><td>${esc(r.gc)}</td><td>${esc(r.dg)}</td><td class="standing-pts">${esc(r.pts)}</td>
+      </tr>`).join("")}</tbody></table></div>`;
   }
 
-  async function renderStanding(name,target){
-    target.innerHTML='<div class="standing-loading">Cargando '+sEsc(name)+'…</div>';
-    const rows=await getStandings(name);
-    target.innerHTML=standingTable(rows);
+  function euroCard(m){
+    return `<article class="match-card">
+      <div class="when">
+        <strong>${esc(fmtDate(m.date))}</strong>
+        <span>${esc(fmtTime(m.date))}</span>
+        <small>${m.round?`Jornada ${esc(m.round)}`:"Competición europea"}</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ${esc(m.key)}">${esc(m.league)}</span>
+        <div class="teams"><b>${esc(m.home)}</b><span>VS</span><b>${esc(m.away)}</b></div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / Orange TV · según partido</div>
+    </article>`;
   }
 
-  function wireTabs(containerId,targetId){
-    const box=document.getElementById(containerId);
-    const target=document.getElementById(targetId);
-    if(!box || !target) return;
-    const buttons=[...box.querySelectorAll(".standing-tab")];
-    buttons.forEach(btn=>btn.addEventListener("click",()=>{
-      buttons.forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      renderStanding(btn.dataset.stand,target);
-    }));
-    if(buttons[0]) renderStanding(buttons[0].dataset.stand,target);
-  }
-
-  wireTabs("leagueStandingTabs","leagueStandingContent");
-  wireTabs("euroStandingTabs","euroStandingContent");
-})();
-</script>
-
-
-
-
-
-<script>
-(function(){
-  const btn=document.getElementById("manualRefreshBtn");
-  if(!btn) return;
-  btn.addEventListener("click", async ()=>{
-    btn.disabled=true;
-    const old=btn.textContent;
-    btn.textContent="Actualizando…";
-    try{
-      // Folio puede bloquear peticiones externas. La prueba se hace contra LaLiga.
-      const url="https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard";
-      const r=await fetch(url,{cache:"no-store"});
-      if(!r.ok) throw new Error();
-      alert("Conexión disponible, pero esta versión local no puede garantizar la actualización completa de todas las ligas.");
-    }catch(e){
-      alert("Folio bloquea la actualización online. Se mantienen los últimos resultados integrados en el archivo.");
-    }finally{
-      btn.disabled=false;
-      btn.textContent=old;
+  function renderDomestic(data){
+    const all=[];
+    for(const [key, meta] of Object.entries(leagueMeta)){
+      const arr=data.domestic?.[key]?.upcoming || [];
+      arr.forEach(m=>all.push(m));
+      const view=document.querySelector(viewSelector[key]);
+      if(view && arr.length) view.innerHTML=arr.map(matchCard).join("");
     }
-  });
+    all.sort((a,b)=>new Date(a.date)-new Date(b.date));
+    const general=document.querySelector(".general-view");
+    if(general && all.length) general.innerHTML=all.map(matchCard).join("");
+  }
+
+  function renderResults(data){
+    const panel=document.getElementById("resultados");
+    if(!panel) return;
+    panel.querySelectorAll(".league-results").forEach(x=>x.remove());
+
+    const blocks=[];
+    for(const key of Object.keys(leagueMeta)){
+      const item=data.domestic?.[key];
+      const rows=item?.results || [];
+      if(!rows.length) continue;
+      const finalCount=rows.filter(x=>!x.live).length;
+      const liveCount=rows.filter(x=>x.live).length;
+      let summary=`${item.name} · ${item.round ? "Jornada "+item.round : "Jornada actual"} · ${finalCount} finalizados`;
+      if(liveCount) summary+=` · ${liveCount} en directo`;
+      blocks.push(`<details class="league-results" open><summary>${esc(summary)}</summary>
+        <div class="result-body"><div class="cards">${rows.map(resultCard).join("")}</div></div>
+      </details>`);
+    }
+    panel.insertAdjacentHTML("beforeend", blocks.join(""));
+  }
+
+  function renderStandings(data){
+    window.__agendaStandings=data.standings || {};
+    const leagueButtons=[...document.querySelectorAll("#leagueStandingTabs .standing-tab")];
+    const leagueTarget=document.getElementById("leagueStandingContent");
+    function renderLeague(btn){
+      leagueButtons.forEach(b=>b.classList.remove("active")); btn.classList.add("active");
+      const name=btn.dataset.stand;
+      const key={
+        "LaLiga":"laliga","Premier League":"premier","Bundesliga":"bundesliga",
+        "Serie A":"seriea","Ligue 1":"ligue1"
+      }[name];
+      leagueTarget.innerHTML=standingTable(data.standings?.[key] || []);
+    }
+    leagueButtons.forEach(btn=>btn.onclick=()=>renderLeague(btn));
+    if(leagueButtons[0]) renderLeague(leagueButtons[0]);
+
+    const euroButtons=[...document.querySelectorAll("#euroStandingTabs .standing-tab")];
+    const euroTarget=document.getElementById("euroStandingContent");
+    function renderEuro(btn){
+      euroButtons.forEach(b=>b.classList.remove("active")); btn.classList.add("active");
+      const key={"Champions League":"ucl","Europa League":"uel","Conference League":"uecl"}[btn.dataset.stand];
+      euroTarget.innerHTML=standingTable(data.standings?.[key] || []);
+    }
+    euroButtons.forEach(btn=>btn.onclick=()=>renderEuro(btn));
+    if(euroButtons[0]) renderEuro(euroButtons[0]);
+  }
+
+  function renderEurope(data){
+    const panel=document.getElementById("europa");
+    const cards=panel?.querySelector(":scope > .cards");
+    const arr=data.europe?.upcoming || [];
+    if(cards && arr.length) cards.innerHTML=arr.map(euroCard).join("");
+  }
+
+  async function loadData(manual=false){
+    const btn=document.getElementById("manualRefreshBtn");
+    if(btn){btn.disabled=true;btn.textContent="Actualizando…";}
+    try{
+      const r=await fetch(`${DATA_URL}?v=${Date.now()}`,{cache:"no-store"});
+      if(!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data=await r.json();
+      renderDomestic(data);
+      renderResults(data);
+      renderStandings(data);
+      renderEurope(data);
+
+      const stamp=document.getElementById("liveRefreshTime");
+      if(stamp){
+        const d=new Date(data.updated_at);
+        stamp.textContent="Última actualización publicada: "+new Intl.DateTimeFormat("es-ES",{
+          timeZone:"Europe/Madrid",day:"2-digit",month:"2-digit",year:"numeric",
+          hour:"2-digit",minute:"2-digit"
+        }).format(d);
+      }
+      const note=document.getElementById("githubUpdateNote");
+      if(note) note.textContent=manual
+        ? "Datos recargados. GitHub genera información nueva aproximadamente cada 15 minutos."
+        : "Actualización automática mediante GitHub · aproximadamente cada 15 minutos.";
+    }catch(e){
+      const note=document.getElementById("githubUpdateNote");
+      if(note) note.textContent="No se pudo cargar data.json. Se mantienen los datos integrados en el HTML.";
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent="↻ Actualizar datos";}
+    }
+  }
+
+  document.getElementById("manualRefreshBtn")?.addEventListener("click",()=>loadData(true));
+  loadData(false);
+  setInterval(()=>loadData(false), 5*60*1000);
 })();
 </script>
 
