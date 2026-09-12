@@ -1,0 +1,5671 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agenda Deportiva 2026/27</title>
+<style>
+:root{--bg:#f4f7fb;--surface:#fff;--line:#e5e7eb;--text:#172033;--muted:#667085;--blue:#2563eb}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+.page{max-width:1180px;margin:auto;padding:12px}
+h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;margin-bottom:14px}
+.main-radio,.filter-radio{position:absolute;opacity:0;pointer-events:none}
+.tabs,.filterbar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.tabs label,.filterbar label{padding:9px 12px;border-radius:10px;background:#eef2f6;color:#475467;font-weight:800;cursor:pointer}
+#tab-ligas:checked~.tabs label[for="tab-ligas"],#tab-resultados:checked~.tabs label[for="tab-resultados"],#tab-europa:checked~.tabs label[for="tab-europa"],#tab-motor:checked~.tabs label[for="tab-motor"]{background:#fff;color:var(--blue);box-shadow:0 2px 9px #0001}
+.panel{display:none;background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px;margin-bottom:14px}
+#tab-ligas:checked~.panels #ligas,#tab-resultados:checked~.panels #resultados,#tab-europa:checked~.panels #europa,#tab-motor:checked~.panels #motor{display:block}
+.panel h2{font-size:1.05rem;margin:0 0 8px}
+.note{font-size:.84rem;color:var(--muted);margin-bottom:10px}
+.league-view{display:none}
+#lf-general:checked~.filterbar label[for="lf-general"]{background:#fff;color:#2563eb;box-shadow:0 2px 8px #0001}#lf-general:checked~.league-views .general-view{display:grid}#lf-laliga:checked~.filterbar label[for="lf-laliga"]{background:#fff;color:#2563eb;box-shadow:0 2px 8px #0001}#lf-laliga:checked~.league-views .view-laliga{display:block}#lf-premier-league:checked~.filterbar label[for="lf-premier-league"]{background:#fff;color:#2563eb;box-shadow:0 2px 8px #0001}#lf-premier-league:checked~.league-views .view-premier-league{display:block}#lf-bundesliga:checked~.filterbar label[for="lf-bundesliga"]{background:#fff;color:#2563eb;box-shadow:0 2px 8px #0001}#lf-bundesliga:checked~.league-views .view-bundesliga{display:block}#lf-serie-a:checked~.filterbar label[for="lf-serie-a"]{background:#fff;color:#2563eb;box-shadow:0 2px 8px #0001}#lf-serie-a:checked~.league-views .view-serie-a{display:block}#lf-ligue-1:checked~.filterbar label[for="lf-ligue-1"]{background:#fff;color:#2563eb;box-shadow:0 2px 8px #0001}#lf-ligue-1:checked~.league-views .view-ligue-1{display:block}
+.general-view{gap:8px}
+.round,.league-results{border:1px solid var(--line);border-radius:12px;margin-bottom:9px;background:#fff}
+.round>summary,.league-results>summary{padding:10px;font-weight:850;cursor:pointer}
+.cards{display:grid;gap:8px;padding:0 8px 8px}
+.match-card,.result-row,.card.result-row{position:relative;display:grid;grid-template-columns:115px minmax(0,1fr) 210px;gap:12px;align-items:center;border:1px solid var(--line);border-radius:13px;padding:28px 10px 10px;background:#fff}
+.when,.datebox{display:flex;flex-direction:column;gap:1px} .when span,.when small,.datebox span,.datebox small{font-size:.75rem;color:var(--muted)}
+.tag{position:absolute;top:8px;right:9px;display:inline-block;color:#fff;font-size:.64rem;font-weight:900;padding:4px 8px;border-radius:999px;margin:0;z-index:2}
+.laliga{background:#ef4444}.premier{background:#7c3aed}.bundesliga{background:#dc2626}.seriea{background:#2563eb}.ligue1{background:#16a34a}.ucl{background:#1d4ed8}.uel{background:#f97316}.uecl{background:#059669}.f1{background:#e10600}.motogp{background:#ea580c}
+.teams{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:7px;align-items:center} .teams b{font-size:.87rem;line-height:1.1} .teams span{font-size:.67rem;color:#98a2b3;font-weight:900}
+.tv{text-align:right;font-size:.81rem;background:#f8fafc;border:1px solid var(--line);padding:8px;border-radius:10px}
+.score{font-weight:950;font-size:1.1rem;text-align:center}
+.live{border-color:#fecaca;background:#fffafa} .live-text{color:#dc2626!important;font-weight:900} .live .score{color:#dc2626}
+.live-box{border:1px solid #fecaca;background:#fffafa;border-radius:14px;padding:10px;margin-bottom:12px} .live-box h3{margin:0 0 8px;font-size:.95rem;color:#b42318}
+.result-body{padding:8px}
+.empty{padding:18px;color:var(--muted);text-align:center}
+.motor-panel .teams span{display:none!important}.motor-panel .teams{grid-template-columns:1fr}.motor-panel .teams b:last-child:empty{display:none}
+@media(max-width:760px){.match-card,.result-row,.card.result-row{grid-template-columns:88px minmax(0,1fr)}.tv,.score{grid-column:1/-1;text-align:left}}
+@media(max-width:520px){.page{padding:9px}.panel{padding:9px}.match-card,.result-row,.card.result-row{grid-template-columns:78px minmax(0,1fr);gap:7px;padding:8px}.teams b{font-size:.76rem}}
+
+.full-calendar{
+  margin-top:12px;
+  border-top:1px solid var(--line);
+  padding-top:12px;
+}
+.full-calendar-title{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  margin-bottom:9px;
+}
+.full-calendar-title strong{font-size:.92rem}
+.season-note{font-size:.76rem;color:var(--muted)}
+.round-grid{
+  display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;
+}
+.round-btn{
+  border:0;background:#eef2f6;color:#475467;border-radius:8px;
+  padding:7px 9px;font-size:.76rem;font-weight:850;cursor:pointer;
+}
+.round-btn.active{background:#2563eb;color:#fff}
+.season-round{display:none}
+.season-round.active{display:block}
+.season-round-head{
+  font-weight:900;font-size:.88rem;margin:4px 0 8px;
+}
+.season-loading,.season-error{
+  padding:14px;text-align:center;color:var(--muted);font-size:.82rem;
+  background:#f8fafc;border:1px solid var(--line);border-radius:10px;
+}
+.season-match{
+  position:relative;display:grid;grid-template-columns:105px minmax(0,1fr) 200px;
+  gap:10px;align-items:center;border:1px solid var(--line);
+  border-radius:12px;padding:9px;margin-bottom:7px;background:#fff;
+}
+.season-when{display:flex;flex-direction:column;gap:1px}
+.season-when strong{font-size:.82rem}
+.season-when span{font-size:.72rem;color:var(--muted)}
+.season-teams{
+  display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  gap:6px;align-items:center;
+}
+.season-teams b{font-size:.82rem;line-height:1.1}
+.season-teams i{font-style:normal;font-size:.65rem;color:#98a2b3;font-weight:900}
+.season-tv{
+  text-align:right;font-size:.76rem;background:#f8fafc;border:1px solid var(--line);
+  padding:7px;border-radius:9px;
+}
+.motor-panel .teams span{display:none!important}.motor-panel .teams{grid-template-columns:1fr}.motor-panel .teams b:last-child:empty{display:none}
+@media(max-width:760px){
+  .season-match{grid-template-columns:82px minmax(0,1fr)}
+  .season-tv{grid-column:1/-1;text-align:left}
+}
+@media(max-width:520px){
+  .season-match{grid-template-columns:72px minmax(0,1fr);gap:7px;padding:8px}
+  .season-teams b{font-size:.72rem}
+  .round-btn{padding:6px 8px;font-size:.72rem}
+}
+
+
+/* Resaltados especiales en la vista general de Europa */
+.euro-legend{
+  display:flex;gap:8px;flex-wrap:wrap;
+  margin:0 0 12px;
+}
+.euro-legend span{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 9px;border-radius:999px;
+  font-size:.72rem;font-weight:850;
+}
+.legend-es{
+  background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;
+}
+.legend-seed{
+  background:#fffbeb;border:1px solid #fde68a;color:#92400e;
+}
+#europa .match-card.euro-spanish{
+  border:2px solid #f59e0b;
+  background:linear-gradient(180deg,#fffdf7,#fff);
+  box-shadow:0 5px 16px rgba(245,158,11,.10);
+}
+#europa .match-card.euro-seeded{
+  box-shadow:inset 4px 0 0 #d4a017,0 4px 14px rgba(15,23,42,.04);
+}
+#europa .match-card.euro-spanish.euro-seeded{
+  border-color:#ef4444;
+  box-shadow:inset 4px 0 0 #f59e0b,0 5px 18px rgba(239,68,68,.10);
+}
+.euro-flags{
+  position:absolute;
+  top:8px;left:9px;
+  display:flex;gap:5px;flex-wrap:wrap;
+  max-width:55%;
+  z-index:3;
+}
+.euro-chip{
+  display:inline-flex;align-items:center;
+  padding:4px 7px;border-radius:999px;
+  font-size:.61rem;font-weight:900;
+  line-height:1;
+  white-space:nowrap;
+}
+.euro-chip.spanish{
+  background:#fff7ed;border:1px solid #fdba74;color:#9a3412;
+}
+.euro-chip.seeded{
+  background:#fffbeb;border:1px solid #facc15;color:#854d0e;
+}
+#europa .match-card{
+  padding-top:32px;
+}
+#europa .teams b.spanish-team{
+  color:#b91c1c;
+  font-weight:950;
+}
+#europa .teams b.seeded-team{
+  text-decoration:underline;
+  text-decoration-color:#d4a017;
+  text-decoration-thickness:2px;
+  text-underline-offset:3px;
+}
+@media(max-width:520px){
+  .euro-flags{max-width:58%}
+  .euro-chip{font-size:.56rem;padding:4px 6px}
+}
+
+
+/* Clasificaciones */
+.standings-box{
+  margin-top:14px;
+  border-top:1px solid var(--line);
+  padding-top:12px;
+}
+.standings-box h3{
+  margin:0 0 9px;
+  font-size:.98rem;
+}
+.standing-tabs{
+  display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;
+}
+.standing-tab{
+  border:0;background:#eef2f6;color:#475467;
+  border-radius:9px;padding:8px 10px;font-size:.76rem;font-weight:850;cursor:pointer;
+}
+.standing-tab.active{
+  background:#2563eb;color:#fff;
+}
+.standing-wrap{
+  overflow-x:auto;
+  border:1px solid var(--line);
+  border-radius:12px;
+}
+.standing-table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:620px;
+  font-size:.78rem;
+  background:#fff;
+}
+.standing-table th,.standing-table td{
+  padding:8px 7px;
+  border-bottom:1px solid var(--line);
+  text-align:center;
+  white-space:nowrap;
+}
+.standing-table th{
+  background:#f8fafc;
+  font-size:.7rem;
+  color:#667085;
+  position:sticky;top:0;
+}
+.standing-table th:nth-child(2),
+.standing-table td:nth-child(2){
+  text-align:left;
+}
+.standing-table tr:last-child td{border-bottom:0}
+.standing-pos{font-weight:900}
+.standing-team{
+  display:flex;align-items:center;gap:7px;font-weight:800;
+}
+.standing-team img{
+  width:20px;height:20px;object-fit:contain;
+}
+.standing-pts{font-weight:950}
+.standing-loading,.standing-error{
+  padding:16px;text-align:center;color:var(--muted);font-size:.82rem;
+  background:#f8fafc;border-radius:10px;
+}
+.standing-updated{
+  margin-top:7px;font-size:.72rem;color:var(--muted);text-align:right;
+}
+@media(max-width:520px){
+  .standing-tab{font-size:.7rem;padding:7px 8px}
+}
+
+
+/* Limpieza visual específica para Resultados */
+#resultados .result-row{
+  position:relative;
+  display:grid;
+  grid-template-columns:110px minmax(0,1fr) 88px;
+  gap:12px;
+  align-items:center;
+  padding:30px 12px 12px;
+  min-height:86px;
+}
+#resultados .fixture{
+  min-width:0;
+}
+#resultados .teams{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:5px;
+  align-items:start;
+}
+#resultados .teams span{
+  display:none;
+}
+#resultados .teams b{
+  display:block;
+  min-width:0;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  word-break:normal;
+  line-height:1.18;
+  font-size:.86rem;
+}
+#resultados .teams b:first-child::after{
+  content:"";
+  display:block;
+  height:1px;
+  background:#eef2f6;
+  margin-top:5px;
+}
+#resultados .score{
+  justify-self:end;
+  min-width:64px;
+  text-align:center;
+  font-size:1.18rem;
+  font-weight:950;
+  background:#f8fafc;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:8px 6px;
+}
+#resultados .live .score{
+  background:#fff1f2;
+  border-color:#fecdd3;
+}
+#resultados .tag{
+  top:8px;
+  right:10px;
+}
+#resultados .when{
+  align-self:start;
+  padding-top:2px;
+}
+#resultados .when strong{
+  font-size:.84rem;
+}
+#resultados .when span,
+#resultados .when small{
+  font-size:.72rem;
+}
+#resultados .league-results>summary{
+  line-height:1.25;
+  padding-right:12px;
+}
+#resultados .result-body{
+  padding:8px;
+}
+@media(max-width:700px){
+  #resultados .result-row{
+    grid-template-columns:82px minmax(0,1fr);
+    gap:8px;
+    padding:32px 9px 9px;
+  }
+  #resultados .score{
+    grid-column:1/-1;
+    justify-self:stretch;
+    text-align:center;
+    min-width:0;
+    font-size:1.05rem;
+  }
+}
+@media(max-width:430px){
+  #resultados .result-row{
+    grid-template-columns:74px minmax(0,1fr);
+  }
+  #resultados .teams b{
+    font-size:.76rem;
+  }
+  #resultados .tag{
+    font-size:.58rem;
+    padding:4px 6px;
+    max-width:52%;
+    white-space:normal;
+    text-align:right;
+  }
+}
+
+
+/* Resultados v29: composición móvil limpia sin solapes */
+#resultados .result-row{
+  position:relative;
+  display:grid !important;
+  grid-template-columns:1fr auto !important;
+  grid-template-areas:
+    "meta score"
+    "teams score";
+  gap:8px 12px !important;
+  align-items:center !important;
+  padding:38px 12px 12px !important;
+  min-height:104px;
+}
+#resultados .when{
+  grid-area:meta;
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center;
+  gap:8px !important;
+  min-width:0;
+  padding:0 !important;
+}
+#resultados .when strong,
+#resultados .when span,
+#resultados .when small{
+  display:inline-block;
+  margin:0;
+  white-space:nowrap;
+}
+#resultados .when strong{font-size:.78rem}
+#resultados .when span{font-size:.74rem;color:var(--muted)}
+#resultados .when small{
+  font-size:.68rem;
+  font-weight:900;
+  padding:3px 6px;
+  border-radius:999px;
+  background:#f2f4f7;
+}
+#resultados .when .live-text{
+  color:#b42318 !important;
+  background:#fff1f2;
+}
+#resultados .fixture{
+  grid-area:teams;
+  min-width:0;
+  width:100%;
+}
+#resultados .teams{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:4px !important;
+  width:100%;
+}
+#resultados .teams span{display:none !important}
+#resultados .teams b{
+  display:block;
+  min-width:0;
+  max-width:100%;
+  white-space:normal !important;
+  overflow-wrap:normal !important;
+  word-break:keep-all !important;
+  hyphens:none !important;
+  line-height:1.16;
+  font-size:.84rem !important;
+}
+#resultados .teams b:first-child{
+  padding-bottom:5px;
+  border-bottom:1px solid #eef2f6;
+}
+#resultados .teams b:first-child::after{display:none !important}
+#resultados .score{
+  grid-area:score !important;
+  align-self:center;
+  justify-self:end !important;
+  min-width:72px !important;
+  padding:10px 8px !important;
+  border-radius:12px !important;
+  font-size:1.22rem !important;
+  line-height:1;
+  white-space:nowrap;
+  background:#f8fafc;
+  border:1px solid var(--line);
+}
+#resultados .live .score{
+  background:#fff1f2;
+  border-color:#fecdd3;
+  color:#b42318;
+}
+#resultados .tag{
+  position:absolute !important;
+  top:8px !important;
+  right:9px !important;
+  left:auto !important;
+  max-width:58%;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size:.58rem !important;
+  padding:4px 7px !important;
+}
+#resultados .league-results>summary{
+  padding:11px 12px !important;
+  font-size:.82rem;
+  line-height:1.25;
+}
+#resultados .result-body{padding:8px !important}
+
+@media(max-width:430px){
+  #resultados .result-row{
+    grid-template-columns:minmax(0,1fr) 68px !important;
+    gap:7px 8px !important;
+    padding:38px 9px 9px !important;
+  }
+  #resultados .when{
+    gap:5px !important;
+    flex-wrap:wrap;
+  }
+  #resultados .teams b{font-size:.74rem !important}
+  #resultados .score{
+    min-width:62px !important;
+    font-size:1.05rem !important;
+    padding:9px 5px !important;
+  }
+  #resultados .tag{
+    max-width:52%;
+    font-size:.54rem !important;
+  }
+}
+
+
+/* Resultados v30: marcador junto a cada equipo */
+#resultados .result-row{
+  grid-template-columns:1fr !important;
+  grid-template-areas:
+    "meta"
+    "teams" !important;
+}
+#resultados .score{
+  display:none !important;
+}
+#resultados .fixture{
+  width:100%;
+}
+#resultados .teams{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:6px !important;
+}
+#resultados .team-line{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  min-width:0;
+  padding:5px 0;
+}
+#resultados .team-line + .team-line{
+  border-top:1px solid #eef2f6;
+}
+#resultados .team-line b{
+  min-width:0;
+  white-space:normal !important;
+  line-height:1.16;
+  font-size:.84rem !important;
+}
+#resultados .team-score{
+  min-width:34px;
+  text-align:center;
+  font-size:1rem;
+  font-weight:950;
+  line-height:1;
+  padding:6px 7px;
+  border-radius:9px;
+  background:#f8fafc;
+  border:1px solid var(--line);
+}
+#resultados .live .team-score{
+  background:#fff1f2;
+  border-color:#fecdd3;
+  color:#b42318;
+}
+@media(max-width:430px){
+  #resultados .team-line{
+    gap:8px;
+  }
+  #resultados .team-line b{
+    font-size:.76rem !important;
+  }
+  #resultados .team-score{
+    min-width:31px;
+    font-size:.92rem;
+    padding:6px;
+  }
+}
+
+
+/* Corrección v31: hacer visibles los marcadores junto a cada equipo */
+#resultados .teams .team-score{
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+}
+
+
+/* v32: actualización automática cada minuto mientras el archivo esté abierto */
+.live-refresh-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:0 0 12px;
+  padding:8px 10px;
+  border:1px solid #dbeafe;
+  background:#eff6ff;
+  border-radius:10px;
+  font-size:.74rem;
+  color:#1e3a8a;
+}
+.live-refresh-dot{
+  display:inline-block;
+  width:8px;height:8px;
+  border-radius:50%;
+  background:#16a34a;
+  margin-right:6px;
+  vertical-align:middle;
+}
+.live-refresh-time{color:#475467}
+
+
+#liveDiag{
+  margin:8px 0 12px;
+  padding:8px 10px;
+  border-radius:10px;
+  background:#f8fafc;
+  border:1px solid var(--line);
+  font-size:.7rem;
+  color:#475467;
+}
+
+
+.manual-refresh-btn{
+  width:100%;
+  border:0;
+  border-radius:12px;
+  padding:11px 14px;
+  margin:0 0 8px;
+  background:#2563eb;
+  color:#fff;
+  font-size:.84rem;
+  font-weight:900;
+}
+.manual-refresh-btn:active{transform:scale(.99)}
+
+</style>
+</head>
+<body>
+<div class="page">
+<h1>Agenda Deportiva 2026/27</h1>
+<div class="sub">Vista general por fecha y hora · filtra una liga solo cuando quieras verla por separado.</div>
+
+<input class="main-radio" type="radio" name="main" id="tab-ligas" checked>
+<input class="main-radio" type="radio" name="main" id="tab-resultados">
+<input class="main-radio" type="radio" name="main" id="tab-europa">
+<input class="main-radio" type="radio" name="main" id="tab-motor">
+
+<div class="tabs">
+<label for="tab-ligas">⚽ Ligas</label>
+<label for="tab-resultados">✅ Resultados</label>
+<label for="tab-europa">🏆 Europa</label>
+<label for="tab-motor">🏁 Motor</label>
+</div>
+
+<div class="panels">
+<section class="panel" id="ligas">
+<h2>Próximos partidos · vista general por horario</h2>
+<div class="note">Por defecto aparecen todas las ligas mezcladas y ordenadas por fecha/hora. Solo se muestra una liga específica cuando pulsas su filtro.</div>
+<input class="filter-radio" type="radio" name="leaguefilter" id="lf-general" checked><input class="filter-radio" type="radio" name="leaguefilter" id="lf-laliga"><input class="filter-radio" type="radio" name="leaguefilter" id="lf-premier-league"><input class="filter-radio" type="radio" name="leaguefilter" id="lf-bundesliga"><input class="filter-radio" type="radio" name="leaguefilter" id="lf-serie-a"><input class="filter-radio" type="radio" name="leaguefilter" id="lf-ligue-1">
+<div class="filterbar"><label for="lf-general">Vista general</label><label for="lf-laliga">LaLiga</label><label for="lf-premier-league">Premier League</label><label for="lf-bundesliga">Bundesliga</label><label for="lf-serie-a">Serie A</label><label for="lf-ligue-1">Ligue 1</label></div>
+<div class="league-views"><div class="league-view general-view"><article class="match-card">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Atalanta</b><span>VS</span><b>Cagliari</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>AJ Auxerre</b><span>VS</span><b>OGC Nice</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Le Havre</b><span>VS</span><b>Angers</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Lorient</b><span>VS</span><b>Toulouse</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Paris FC</b><span>VS</span><b>Olympique Lyon</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Real Madrid</b><span>VS</span><b>Rayo Vallecano</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Sunderland AFC</b><span>VS</span><b>Arsenal FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>14:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>RC Celta de Vigo</b><span>VS</span><b>Malaga CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Coventry City</b><span>VS</span><b>Brighton &amp; Hove Albion</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Lecce</b><span>VS</span><b>Monza</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Lille</b><span>VS</span><b>Troyes</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 3</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>RB Leipzig</b><span>VS</span><b>Hamburger SV</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>16:15</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Levante UD</b><span>VS</span><b>FC Barcelona</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>17:15</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Le Mans</b><span>VS</span><b>Lens</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>17:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Manchester United</b><span>VS</span><b>Manchester City</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>17:30</span>
+        <small>Jornada 3</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>SV 07 Elversberg</b><span>VS</span><b>Bayern Munich</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>18:00</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Napoli</b><span>VS</span><b>Bologna</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Getafe CF</b><span>VS</span><b>RC Deportivo de A Coruna</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Sassuolo</b><span>VS</span><b>Juventus</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Brest</b><span>VS</span><b>Paris Saint-Germain</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Real Sociedad</b><span>VS</span><b>Atletico Madrid</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>14/09/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Como</b><span>VS</span><b>Parma</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>14/09/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Torino</b><span>VS</span><b>AS Roma</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>14/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Inter</b><span>VS</span><b>Udinese</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>14/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Villarreal CF</b><span>VS</span><b>Real Betis</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>14/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Leeds United</b><span>VS</span><b>Newcastle United</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/09/2026</strong>
+        <span>19:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Rayo Vallecano</b><span>VS</span><b>Espanyol Barcelona</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/09/2026</strong>
+        <span>20:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Deportivo Alaves</b><span>VS</span><b>Valencia CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/09/2026</strong>
+        <span>21:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Elche CF</b><span>VS</span><b>Real Madrid</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>19:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Atletico Madrid</b><span>VS</span><b>CA Osasuna</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>19:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>RC Deportivo de A Coruna</b><span>VS</span><b>Sevilla FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>21:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>FC Barcelona</b><span>VS</span><b>Racing Santander</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>21:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Levante UD</b><span>VS</span><b>Athletic Bilbao</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>17/09/2026</strong>
+        <span>19:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Real Betis</b><span>VS</span><b>Getafe CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>17/09/2026</strong>
+        <span>21:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Malaga CF</b><span>VS</span><b>Villarreal CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>18/09/2026</strong>
+        <span>20:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Bayern Munich</b><span>VS</span><b>Union Berlin</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>18/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Monza</b><span>VS</span><b>Sassuolo</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>18/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>AS Monaco</b><span>VS</span><b>Lens</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>18/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Espanyol Barcelona</b><span>VS</span><b>Elche CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>18/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Brentford FC</b><span>VS</span><b>Chelsea FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>13:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Tottenham Hotspur</b><span>VS</span><b>Aston Villa</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>14:00</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>CA Osasuna</b><span>VS</span><b>Rayo Vallecano</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Bologna</b><span>VS</span><b>Torino</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Udinese</b><span>VS</span><b>Cagliari</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Eintracht Frankfurt</b><span>VS</span><b>SC Freiburg</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Borussia Monchengladbach</b><span>VS</span><b>FSV Mainz</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Hamburger SV</b><span>VS</span><b>1. FC Cologne</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Werder Bremen</b><span>VS</span><b>FC Augsburg</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>16:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Brighton &amp; Hove Albion</b><span>VS</span><b>Arsenal FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>16:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Everton FC</b><span>VS</span><b>Ipswich Town</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>16:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Newcastle United</b><span>VS</span><b>Hull City</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>16:15</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Athletic Bilbao</b><span>VS</span><b>Deportivo Alaves</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>17:15</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Paris FC</b><span>VS</span><b>Strasbourg</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>18:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>AS Roma</b><span>VS</span><b>Inter</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>RC Celta de Vigo</b><span>VS</span><b>Racing Santander</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Nottingham Forest</b><span>VS</span><b>Coventry City</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>VfB Stuttgart</b><span>VS</span><b>Borussia Dortmund</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Venezia</b><span>VS</span><b>Lazio</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Angers</b><span>VS</span><b>Troyes</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Le Mans</b><span>VS</span><b>Lorient</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Olympique Lyon</b><span>VS</span><b>Rennes</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Toulouse</b><span>VS</span><b>Le Havre</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Sevilla FC</b><span>VS</span><b>FC Barcelona</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>12:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Fiorentina</b><span>VS</span><b>Napoli</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>14:00</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Getafe CF</b><span>VS</span><b>Malaga CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>AFC Bournemouth</b><span>VS</span><b>Liverpool FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Leeds United</b><span>VS</span><b>Crystal Palace</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Manchester City</b><span>VS</span><b>Sunderland AFC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Frosinone</b><span>VS</span><b>Como</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Parma</b><span>VS</span><b>Genoa</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>AJ Auxerre</b><span>VS</span><b>Brest</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Bayer Leverkusen</b><span>VS</span><b>RB Leipzig</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>16:15</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Atletico Madrid</b><span>VS</span><b>Real Madrid</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>17:15</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>OGC Nice</b><span>VS</span><b>Lille</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>17:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Fulham FC</b><span>VS</span><b>Manchester United</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>17:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Schalke 04</b><span>VS</span><b>SV 07 Elversberg</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>18:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Juventus</b><span>VS</span><b>Atalanta</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>RC Deportivo de A Coruna</b><span>VS</span><b>Real Betis</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Villarreal CF</b><span>VS</span><b>Levante UD</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>19:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>SC Paderborn 07</b><span>VS</span><b>TSG Hoffenheim</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>AC Milan</b><span>VS</span><b>Lecce</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Olympique Marseille</b><span>VS</span><b>Paris Saint-Germain</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Valencia CF</b><span>VS</span><b>Real Sociedad</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>09/10/2026</strong>
+        <span>20:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Borussia Dortmund</b><span>VS</span><b>Werder Bremen</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>09/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Lens</b><span>VS</span><b>Olympique Lyon</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>09/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Malaga CF</b><span>VS</span><b>Espanyol Barcelona</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>13:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Arsenal FC</b><span>VS</span><b>Leeds United</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>14:00</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Rayo Vallecano</b><span>VS</span><b>Athletic Bilbao</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Genoa</b><span>VS</span><b>Fiorentina</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>TSG Hoffenheim</b><span>VS</span><b>Hamburger SV</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>FC Augsburg</b><span>VS</span><b>Bayern Munich</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>FSV Mainz</b><span>VS</span><b>Bayer Leverkusen</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Union Berlin</b><span>VS</span><b>SV 07 Elversberg</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>SC Paderborn 07</b><span>VS</span><b>VfB Stuttgart</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>16:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Aston Villa</b><span>VS</span><b>Brentford FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>16:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Chelsea FC</b><span>VS</span><b>AFC Bournemouth</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>16:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Ipswich Town</b><span>VS</span><b>Fulham FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>16:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Sunderland AFC</b><span>VS</span><b>Brighton &amp; Hove Albion</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>16:15</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Deportivo Alaves</b><span>VS</span><b>Atletico Madrid</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>17:15</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Lille</b><span>VS</span><b>Le Havre</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>18:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Inter</b><span>VS</span><b>Parma</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>FC Barcelona</b><span>VS</span><b>Getafe CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Manchester United</b><span>VS</span><b>Tottenham Hotspur</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>RB Leipzig</b><span>VS</span><b>Eintracht Frankfurt</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Napoli</b><span>VS</span><b>Frosinone</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Brest</b><span>VS</span><b>Angers</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Lorient</b><span>VS</span><b>Paris FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>AS Monaco</b><span>VS</span><b>Toulouse</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Paris Saint-Germain</b><span>VS</span><b>Le Mans</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Real Madrid</b><span>VS</span><b>Villarreal CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>12:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Como</b><span>VS</span><b>AS Roma</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>14:00</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Elche CF</b><span>VS</span><b>RC Celta de Vigo</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Crystal Palace</b><span>VS</span><b>Nottingham Forest</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Hull City</b><span>VS</span><b>Everton FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Lazio</b><span>VS</span><b>Monza</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Lecce</b><span>VS</span><b>Bologna</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>OGC Nice</b><span>VS</span><b>Strasbourg</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>1. FC Cologne</b><span>VS</span><b>Borussia Monchengladbach</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>16:15</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Real Sociedad</b><span>VS</span><b>RC Deportivo de A Coruna</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>17:15</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Rennes</b><span>VS</span><b>AJ Auxerre</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>17:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Liverpool FC</b><span>VS</span><b>Manchester City</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>17:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>SC Freiburg</b><span>VS</span><b>Schalke 04</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>18:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Sassuolo</b><span>VS</span><b>AC Milan</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Real Betis</b><span>VS</span><b>CA Osasuna</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Cagliari</b><span>VS</span><b>Juventus</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Troyes</b><span>VS</span><b>Olympique Marseille</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Racing Santander</b><span>VS</span><b>Valencia CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/10/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Atalanta</b><span>VS</span><b>Venezia</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Torino</b><span>VS</span><b>Udinese</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Levante UD</b><span>VS</span><b>Sevilla FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Coventry City</b><span>VS</span><b>Newcastle United</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article></div><div class="league-view view-laliga"><details class="round" open>
+              <summary>Jornada 5 · 6 partidos</summary>
+              <div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Real Madrid</b><span>VS</span><b>Rayo Vallecano</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>14:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>RC Celta de Vigo</b><span>VS</span><b>Malaga CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>16:15</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Levante UD</b><span>VS</span><b>FC Barcelona</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Getafe CF</b><span>VS</span><b>RC Deportivo de A Coruna</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Real Sociedad</b><span>VS</span><b>Atletico Madrid</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>14/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Villarreal CF</b><span>VS</span><b>Real Betis</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article></div>
+            </details><details class="round" >
+              <summary>Jornada 6 · 9 partidos</summary>
+              <div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>15/09/2026</strong>
+        <span>19:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Rayo Vallecano</b><span>VS</span><b>Espanyol Barcelona</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/09/2026</strong>
+        <span>20:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Deportivo Alaves</b><span>VS</span><b>Valencia CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/09/2026</strong>
+        <span>21:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Elche CF</b><span>VS</span><b>Real Madrid</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>19:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Atletico Madrid</b><span>VS</span><b>CA Osasuna</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>19:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>RC Deportivo de A Coruna</b><span>VS</span><b>Sevilla FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>21:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>FC Barcelona</b><span>VS</span><b>Racing Santander</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>21:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Levante UD</b><span>VS</span><b>Athletic Bilbao</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>17/09/2026</strong>
+        <span>19:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Real Betis</b><span>VS</span><b>Getafe CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>17/09/2026</strong>
+        <span>21:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Malaga CF</b><span>VS</span><b>Villarreal CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article></div>
+            </details><details class="round" >
+              <summary>Jornada 7 · 10 partidos</summary>
+              <div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>18/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Espanyol Barcelona</b><span>VS</span><b>Elche CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>14:00</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>CA Osasuna</b><span>VS</span><b>Rayo Vallecano</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>16:15</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Athletic Bilbao</b><span>VS</span><b>Deportivo Alaves</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>RC Celta de Vigo</b><span>VS</span><b>Racing Santander</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Sevilla FC</b><span>VS</span><b>FC Barcelona</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>14:00</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Getafe CF</b><span>VS</span><b>Malaga CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>16:15</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Atletico Madrid</b><span>VS</span><b>Real Madrid</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>RC Deportivo de A Coruna</b><span>VS</span><b>Real Betis</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Villarreal CF</b><span>VS</span><b>Levante UD</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 7</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Valencia CF</b><span>VS</span><b>Real Sociedad</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article></div>
+            </details><details class="round" >
+              <summary>Jornada 8 · 10 partidos</summary>
+              <div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>09/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Malaga CF</b><span>VS</span><b>Espanyol Barcelona</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>14:00</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Rayo Vallecano</b><span>VS</span><b>Athletic Bilbao</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>16:15</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Deportivo Alaves</b><span>VS</span><b>Atletico Madrid</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>FC Barcelona</b><span>VS</span><b>Getafe CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Real Madrid</b><span>VS</span><b>Villarreal CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>14:00</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Elche CF</b><span>VS</span><b>RC Celta de Vigo</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>16:15</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Real Sociedad</b><span>VS</span><b>RC Deportivo de A Coruna</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Real Betis</b><span>VS</span><b>CA Osasuna</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Racing Santander</b><span>VS</span><b>Valencia CF</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 8</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <b>Levante UD</b><span>VS</span><b>Sevilla FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ / DAZN LALIGA · según partido</div>
+    </article></div>
+            </details></div>
+<div class="full-calendar" id="calendar-laliga" data-league="LaLiga" data-rounds="38" data-tv="Movistar Plus+ / DAZN LALIGA · según partido">
+  <div class="full-calendar-title">
+    <strong>📅 Calendario completo 2026/27</strong>
+    <span class="season-note">Jornadas 1–38 · doble fuente de datos</span>
+  </div>
+  <div class="round-grid" aria-label="Jornadas"></div>
+  <div class="season-content"><div class="season-loading">Calendario completo preparado. Selecciona una jornada.</div></div>
+</div>
+<div class="league-view view-premier-league"><details class="round" open>
+              <summary>Jornada 4 · 4 partidos</summary>
+              <div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Sunderland AFC</b><span>VS</span><b>Arsenal FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Coventry City</b><span>VS</span><b>Brighton &amp; Hove Albion</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>17:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Manchester United</b><span>VS</span><b>Manchester City</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>14/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Leeds United</b><span>VS</span><b>Newcastle United</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article></div>
+            </details><details class="round" >
+              <summary>Jornada 5 · 10 partidos</summary>
+              <div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>18/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Brentford FC</b><span>VS</span><b>Chelsea FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>13:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Tottenham Hotspur</b><span>VS</span><b>Aston Villa</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>16:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Brighton &amp; Hove Albion</b><span>VS</span><b>Arsenal FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>16:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Everton FC</b><span>VS</span><b>Ipswich Town</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>16:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Newcastle United</b><span>VS</span><b>Hull City</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Nottingham Forest</b><span>VS</span><b>Coventry City</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>AFC Bournemouth</b><span>VS</span><b>Liverpool FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Leeds United</b><span>VS</span><b>Crystal Palace</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Manchester City</b><span>VS</span><b>Sunderland AFC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>17:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Fulham FC</b><span>VS</span><b>Manchester United</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article></div>
+            </details><details class="round" >
+              <summary>Jornada 6 · 10 partidos</summary>
+              <div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>13:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Arsenal FC</b><span>VS</span><b>Leeds United</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>16:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Aston Villa</b><span>VS</span><b>Brentford FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>16:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Chelsea FC</b><span>VS</span><b>AFC Bournemouth</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>16:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Ipswich Town</b><span>VS</span><b>Fulham FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>16:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Sunderland AFC</b><span>VS</span><b>Brighton &amp; Hove Albion</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Manchester United</b><span>VS</span><b>Tottenham Hotspur</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Crystal Palace</b><span>VS</span><b>Nottingham Forest</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Hull City</b><span>VS</span><b>Everton FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>17:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Liverpool FC</b><span>VS</span><b>Manchester City</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <b>Coventry City</b><span>VS</span><b>Newcastle United</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article></div>
+            </details></div>
+<div class="full-calendar" id="calendar-premier-league" data-league="Premier League" data-rounds="38" data-tv="DAZN">
+  <div class="full-calendar-title">
+    <strong>📅 Calendario completo 2026/27</strong>
+    <span class="season-note">Jornadas 1–38 · doble fuente de datos</span>
+  </div>
+  <div class="round-grid" aria-label="Jornadas"></div>
+  <div class="season-content"><div class="season-loading">Calendario completo preparado. Selecciona una jornada.</div></div>
+</div>
+<div class="league-view view-bundesliga"><details class="round" open>
+              <summary>Jornada 3 · 2 partidos</summary>
+              <div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 3</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>RB Leipzig</b><span>VS</span><b>Hamburger SV</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>17:30</span>
+        <small>Jornada 3</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>SV 07 Elversberg</b><span>VS</span><b>Bayern Munich</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article></div>
+            </details><details class="round" >
+              <summary>Jornada 4 · 9 partidos</summary>
+              <div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>18/09/2026</strong>
+        <span>20:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Bayern Munich</b><span>VS</span><b>Union Berlin</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Eintracht Frankfurt</b><span>VS</span><b>SC Freiburg</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Borussia Monchengladbach</b><span>VS</span><b>FSV Mainz</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Hamburger SV</b><span>VS</span><b>1. FC Cologne</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Werder Bremen</b><span>VS</span><b>FC Augsburg</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>VfB Stuttgart</b><span>VS</span><b>Borussia Dortmund</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Bayer Leverkusen</b><span>VS</span><b>RB Leipzig</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>17:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Schalke 04</b><span>VS</span><b>SV 07 Elversberg</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>19:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>SC Paderborn 07</b><span>VS</span><b>TSG Hoffenheim</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article></div>
+            </details><details class="round" >
+              <summary>Jornada 5 · 9 partidos</summary>
+              <div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>09/10/2026</strong>
+        <span>20:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Borussia Dortmund</b><span>VS</span><b>Werder Bremen</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>TSG Hoffenheim</b><span>VS</span><b>Hamburger SV</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>FC Augsburg</b><span>VS</span><b>Bayern Munich</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>FSV Mainz</b><span>VS</span><b>Bayer Leverkusen</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>Union Berlin</b><span>VS</span><b>SV 07 Elversberg</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>SC Paderborn 07</b><span>VS</span><b>VfB Stuttgart</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>RB Leipzig</b><span>VS</span><b>Eintracht Frankfurt</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>15:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>1. FC Cologne</b><span>VS</span><b>Borussia Monchengladbach</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>17:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <b>SC Freiburg</b><span>VS</span><b>Schalke 04</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article></div>
+            </details></div>
+<div class="full-calendar" id="calendar-bundesliga" data-league="Bundesliga" data-rounds="34" data-tv="DAZN">
+  <div class="full-calendar-title">
+    <strong>📅 Calendario completo 2026/27</strong>
+    <span class="season-note">Jornadas 1–34 · doble fuente de datos</span>
+  </div>
+  <div class="round-grid" aria-label="Jornadas"></div>
+  <div class="season-content"><div class="season-loading">Calendario completo preparado. Selecciona una jornada.</div></div>
+</div>
+<div class="league-view view-serie-a"><details class="round" open>
+              <summary>Jornada 4 · 7 partidos</summary>
+              <div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Atalanta</b><span>VS</span><b>Cagliari</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Lecce</b><span>VS</span><b>Monza</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>18:00</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Napoli</b><span>VS</span><b>Bologna</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Sassuolo</b><span>VS</span><b>Juventus</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>14/09/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Como</b><span>VS</span><b>Parma</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>14/09/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Torino</b><span>VS</span><b>AS Roma</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>14/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Inter</b><span>VS</span><b>Udinese</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article></div>
+            </details><details class="round" >
+              <summary>Jornada 5 · 10 partidos</summary>
+              <div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>18/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Monza</b><span>VS</span><b>Sassuolo</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Bologna</b><span>VS</span><b>Torino</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Udinese</b><span>VS</span><b>Cagliari</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>18:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>AS Roma</b><span>VS</span><b>Inter</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Venezia</b><span>VS</span><b>Lazio</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>12:30</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Fiorentina</b><span>VS</span><b>Napoli</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Frosinone</b><span>VS</span><b>Como</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Parma</b><span>VS</span><b>Genoa</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>18:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Juventus</b><span>VS</span><b>Atalanta</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>AC Milan</b><span>VS</span><b>Lecce</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article></div>
+            </details><details class="round" >
+              <summary>Jornada 6 · 10 partidos</summary>
+              <div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Genoa</b><span>VS</span><b>Fiorentina</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>18:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Inter</b><span>VS</span><b>Parma</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Napoli</b><span>VS</span><b>Frosinone</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>12:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Como</b><span>VS</span><b>AS Roma</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Lazio</b><span>VS</span><b>Monza</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Lecce</b><span>VS</span><b>Bologna</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>18:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Sassuolo</b><span>VS</span><b>AC Milan</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Cagliari</b><span>VS</span><b>Juventus</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/10/2026</strong>
+        <span>18:30</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Atalanta</b><span>VS</span><b>Venezia</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <b>Torino</b><span>VS</span><b>Udinese</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article></div>
+            </details></div>
+<div class="full-calendar" id="calendar-serie-a" data-league="Serie A" data-rounds="38" data-tv="DAZN">
+  <div class="full-calendar-title">
+    <strong>📅 Calendario completo 2026/27</strong>
+    <span class="season-note">Jornadas 1–38 · doble fuente de datos</span>
+  </div>
+  <div class="round-grid" aria-label="Jornadas"></div>
+  <div class="season-content"><div class="season-loading">Calendario completo preparado. Selecciona una jornada.</div></div>
+</div>
+<div class="league-view view-ligue-1"><details class="round" open>
+              <summary>Jornada 4 · 7 partidos</summary>
+              <div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>AJ Auxerre</b><span>VS</span><b>OGC Nice</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Le Havre</b><span>VS</span><b>Angers</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Lorient</b><span>VS</span><b>Toulouse</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Paris FC</b><span>VS</span><b>Olympique Lyon</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Lille</b><span>VS</span><b>Troyes</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>17:15</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Le Mans</b><span>VS</span><b>Lens</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 4</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Brest</b><span>VS</span><b>Paris Saint-Germain</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article></div>
+            </details><details class="round" >
+              <summary>Jornada 5 · 9 partidos</summary>
+              <div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>18/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>AS Monaco</b><span>VS</span><b>Lens</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>17:15</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Paris FC</b><span>VS</span><b>Strasbourg</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Angers</b><span>VS</span><b>Troyes</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Le Mans</b><span>VS</span><b>Lorient</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Olympique Lyon</b><span>VS</span><b>Rennes</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>19/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Toulouse</b><span>VS</span><b>Le Havre</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>AJ Auxerre</b><span>VS</span><b>Brest</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>17:15</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>OGC Nice</b><span>VS</span><b>Lille</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 5</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Olympique Marseille</b><span>VS</span><b>Paris Saint-Germain</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article></div>
+            </details><details class="round" >
+              <summary>Jornada 6 · 9 partidos</summary>
+              <div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>09/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Lens</b><span>VS</span><b>Olympique Lyon</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>17:15</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Lille</b><span>VS</span><b>Le Havre</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Brest</b><span>VS</span><b>Angers</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Lorient</b><span>VS</span><b>Paris FC</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>AS Monaco</b><span>VS</span><b>Toulouse</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>10/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Paris Saint-Germain</b><span>VS</span><b>Le Mans</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>15:00</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>OGC Nice</b><span>VS</span><b>Strasbourg</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>17:15</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Rennes</b><span>VS</span><b>AJ Auxerre</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>20:45</span>
+        <small>Jornada 6</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <b>Troyes</b><span>VS</span><b>Olympique Marseille</b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article></div>
+            </details></div>
+<div class="full-calendar" id="calendar-ligue-1" data-league="Ligue 1" data-rounds="34" data-tv="DAZN">
+  <div class="full-calendar-title">
+    <strong>📅 Calendario completo 2026/27</strong>
+    <span class="season-note">Jornadas 1–34 · doble fuente de datos</span>
+  </div>
+  <div class="round-grid" aria-label="Jornadas"></div>
+  <div class="season-content"><div class="season-loading">Calendario completo preparado. Selecciona una jornada.</div></div>
+</div>
+</div>
+
+<div class="standings-box" id="leagueStandingsBox">
+  <h3>📊 Clasificación general</h3>
+  <div class="standing-tabs" id="leagueStandingTabs">
+    <button class="standing-tab active" data-stand="LaLiga">LaLiga</button>
+    <button class="standing-tab" data-stand="Premier League">Premier</button>
+    <button class="standing-tab" data-stand="Bundesliga">Bundesliga</button>
+    <button class="standing-tab" data-stand="Serie A">Serie A</button>
+    <button class="standing-tab" data-stand="Ligue 1">Ligue 1</button>
+  </div>
+  <div id="leagueStandingContent"><div class="standing-loading">Cargando clasificación…</div></div>
+  <div class="standing-updated">Actualización automática diaria</div>
+</div>
+</section>
+
+<section class="panel" id="resultados">
+<h2>Resultados · jornada en juego</h2>
+<div class="live-refresh-bar">
+  <span><span class="live-refresh-dot"></span>Datos actualizados</span>
+  <span class="live-refresh-time" id="liveRefreshTime">13/09/2026 · 00:58</span>
+</div>
+<button id="manualRefreshBtn" class="manual-refresh-btn" type="button">↻ Actualizar datos</button>
+<div class="note">Solo se muestran los partidos en directo y los partidos ya finalizados de la jornada que se está disputando actualmente. No aparecen jornadas anteriores ni futuras.</div>
+<details class="league-results" open>
+      <summary>LaLiga · Jornada 5 · 4 finalizados</summary>
+      <div class="result-body"><div class="cards"><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>14:00</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <div class="team-line"><b>Racing Santander</b><span class="team-score">2</span></div>
+          <div class="team-line"><b>Deportivo Alaves</b><span class="team-score">1</span></div>
+        </div>
+      </div>
+      <div class="score">2 - 1</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>16:15</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <div class="team-line"><b>CA Osasuna</b><span class="team-score">0</span></div>
+          <div class="team-line"><b>Espanyol Barcelona</b><span class="team-score">2</span></div>
+        </div>
+      </div>
+      <div class="score">0 - 2</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>18:30</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <div class="team-line"><b>Athletic Bilbao</b><span class="team-score">1</span></div>
+          <div class="team-line"><b>Elche CF</b><span class="team-score">1</span></div>
+        </div>
+      </div>
+      <div class="score">1 - 1</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>21:00</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag laliga">LaLiga</span>
+        <div class="teams">
+          <div class="team-line"><b>Real Madrid</b><span class="team-score">4</span></div>
+          <div class="team-line"><b>Rayo Vallecano</b><span class="team-score">1</span></div>
+        </div>
+      </div>
+      <div class="score">4 - 1</div>
+    </article></div></div>
+    </details><details class="league-results" open>
+      <summary>Premier League · Jornada 4 · 7 finalizados</summary>
+      <div class="result-body"><div class="cards"><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>16:00</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <div class="team-line"><b>Aston Villa</b><span class="team-score">1</span></div>
+          <div class="team-line"><b>Nottingham Forest</b><span class="team-score">2</span></div>
+        </div>
+      </div>
+      <div class="score">1 - 2</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>16:00</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <div class="team-line"><b>AFC Bournemouth</b><span class="team-score">2</span></div>
+          <div class="team-line"><b>Brentford FC</b><span class="team-score">2</span></div>
+        </div>
+      </div>
+      <div class="score">2 - 2</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>16:00</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <div class="team-line"><b>Chelsea FC</b><span class="team-score">2</span></div>
+          <div class="team-line"><b>Hull City</b><span class="team-score">2</span></div>
+        </div>
+      </div>
+      <div class="score">2 - 2</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>16:00</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <div class="team-line"><b>Crystal Palace</b><span class="team-score">2</span></div>
+          <div class="team-line"><b>Ipswich Town</b><span class="team-score">3</span></div>
+        </div>
+      </div>
+      <div class="score">2 - 3</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>16:00</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <div class="team-line"><b>Liverpool FC</b><span class="team-score">0</span></div>
+          <div class="team-line"><b>Fulham FC</b><span class="team-score">0</span></div>
+        </div>
+      </div>
+      <div class="score">0 - 0</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>18:30</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <div class="team-line"><b>Tottenham Hotspur</b><span class="team-score">0</span></div>
+          <div class="team-line"><b>Everton FC</b><span class="team-score">0</span></div>
+        </div>
+      </div>
+      <div class="score">0 - 0</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>21:00</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag premier">Premier League</span>
+        <div class="teams">
+          <div class="team-line"><b>Sunderland AFC</b><span class="team-score">0</span></div>
+          <div class="team-line"><b>Arsenal FC</b><span class="team-score">2</span></div>
+        </div>
+      </div>
+      <div class="score">0 - 2</div>
+    </article></div></div>
+    </details><details class="league-results" open>
+      <summary>Bundesliga · Jornada 3 · 6 finalizados</summary>
+      <div class="result-body"><div class="cards"><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>15:30</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <div class="team-line"><b>Borussia Dortmund</b><span class="team-score">3</span></div>
+          <div class="team-line"><b>SC Paderborn 07</b><span class="team-score">0</span></div>
+        </div>
+      </div>
+      <div class="score">3 - 0</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>15:30</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <div class="team-line"><b>TSG Hoffenheim</b><span class="team-score">2</span></div>
+          <div class="team-line"><b>VfB Stuttgart</b><span class="team-score">1</span></div>
+        </div>
+      </div>
+      <div class="score">2 - 1</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>15:30</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <div class="team-line"><b>SC Freiburg</b><span class="team-score">5</span></div>
+          <div class="team-line"><b>Borussia Monchengladbach</b><span class="team-score">0</span></div>
+        </div>
+      </div>
+      <div class="score">5 - 0</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>15:30</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <div class="team-line"><b>FC Augsburg</b><span class="team-score">2</span></div>
+          <div class="team-line"><b>Bayer Leverkusen</b><span class="team-score">2</span></div>
+        </div>
+      </div>
+      <div class="score">2 - 2</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>15:30</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <div class="team-line"><b>FSV Mainz</b><span class="team-score">1</span></div>
+          <div class="team-line"><b>Eintracht Frankfurt</b><span class="team-score">3</span></div>
+        </div>
+      </div>
+      <div class="score">1 - 3</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>18:30</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag bundesliga">Bundesliga</span>
+        <div class="teams">
+          <div class="team-line"><b>1. FC Cologne</b><span class="team-score">1</span></div>
+          <div class="team-line"><b>Werder Bremen</b><span class="team-score">1</span></div>
+        </div>
+      </div>
+      <div class="score">1 - 1</div>
+    </article></div></div>
+    </details><details class="league-results" open>
+      <summary>Serie A · Jornada 4 · 3 finalizados</summary>
+      <div class="result-body"><div class="cards"><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>15:00</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <div class="team-line"><b>Genoa CFC</b><span class="team-score">1</span></div>
+          <div class="team-line"><b>Frosinone Calcio</b><span class="team-score">1</span></div>
+        </div>
+      </div>
+      <div class="score">1 - 1</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>18:00</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <div class="team-line"><b>Lazio Rome</b><span class="team-score">2</span></div>
+          <div class="team-line"><b>AC Milan</b><span class="team-score">2</span></div>
+        </div>
+      </div>
+      <div class="score">2 - 2</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>20:45</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag seriea">Serie A</span>
+        <div class="teams">
+          <div class="team-line"><b>Atalanta BC</b><span class="team-score">1</span></div>
+          <div class="team-line"><b>Cagliari Calcio</b><span class="team-score">2</span></div>
+        </div>
+      </div>
+      <div class="score">1 - 2</div>
+    </article></div></div>
+    </details><details class="league-results" open>
+      <summary>Ligue 1 · Jornada 4 · 5 finalizados</summary>
+      <div class="result-body"><div class="cards"><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>17:15</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <div class="team-line"><b>Strasbourg Alsace</b><span class="team-score">1</span></div>
+          <div class="team-line"><b>AS Monaco</b><span class="team-score">1</span></div>
+        </div>
+      </div>
+      <div class="score">1 - 1</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>20:45</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <div class="team-line"><b>AJ Auxerre</b><span class="team-score">1</span></div>
+          <div class="team-line"><b>OGC Nice</b><span class="team-score">0</span></div>
+        </div>
+      </div>
+      <div class="score">1 - 0</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>20:45</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <div class="team-line"><b>Le Havre AC</b><span class="team-score">0</span></div>
+          <div class="team-line"><b>Angers SCO</b><span class="team-score">0</span></div>
+        </div>
+      </div>
+      <div class="score">0 - 0</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>20:45</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <div class="team-line"><b>FC Lorient</b><span class="team-score">2</span></div>
+          <div class="team-line"><b>Toulouse FC</b><span class="team-score">2</span></div>
+        </div>
+      </div>
+      <div class="score">2 - 2</div>
+    </article><article class="result-row">
+      <div class="when">
+        <strong>12/09/2026</strong>
+        <span>20:45</span>
+        <small>FINAL</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ligue1">Ligue 1</span>
+        <div class="teams">
+          <div class="team-line"><b>Paris FC</b><span class="team-score">0</span></div>
+          <div class="team-line"><b>Olympique Lyon</b><span class="team-score">0</span></div>
+        </div>
+      </div>
+      <div class="score">0 - 0</div>
+    </article></div></div>
+    </details>
+</section>
+<section class="panel" id="europa">
+<h2>Competiciones europeas</h2>
+<div class="euro-legend">
+  <span class="legend-es">🇪🇸 Equipo español</span>
+  <span class="legend-seed">⭐ Cabeza de serie</span>
+</div>
+<div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b>Ararat-Armenia</b><span>VS</span><b>Sparta Praha</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-spanish"><div class="euro-flags"><span class="euro-chip spanish">🇪🇸 ESP</span></div>
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b>Omonia</b><span>VS</span><b class="spanish-team">Celta</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-seeded"><div class="euro-flags"><span class="euro-chip seeded">⭐ Cabeza de serie</span></div>
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b class="seeded-team">Milan</b><span>VS</span><b class="seeded-team">Benfica</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-seeded"><div class="euro-flags"><span class="euro-chip seeded">⭐ Cabeza de serie</span></div>
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b class="seeded-team">Leverkusen</b><span>VS</span><b>Celje</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b>H. Beer-Sheva</b><span>VS</span><b>GNK Dinamo</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b>Olympiacos</b><span>VS</span><b>Jagiellonia</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b>Anderlecht</b><span>VS</span><b>Lyon</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b>Sturm Graz</b><span>VS</span><b>Rennes</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>16/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b>Sunderland</b><span>VS</span><b>AZ Alkmaar</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>17/09/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b>OFI Crete</b><span>VS</span><b>Hoffenheim</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>17/09/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b>Levski Sofia</b><span>VS</span><b>Salzburg</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>17/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b>Besiktas</b><span>VS</span><b>Marseille</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>17/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b>Celtic</b><span>VS</span><b>Ferencvaros</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>17/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b>Crystal Palace</b><span>VS</span><b>Lech Poznan</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>17/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b>Viktoria Plzen</b><span>VS</span><b>Union SG</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-seeded"><div class="euro-flags"><span class="euro-chip seeded">⭐ Cabeza de serie</span></div>
+      <div class="when">
+        <strong>17/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b class="seeded-team">Juventus</b><span>VS</span><b>N.E.C.</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>17/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b>Lillestrom</b><span>VS</span><b>Torreense</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-spanish"><div class="euro-flags"><span class="euro-chip spanish">🇪🇸 ESP</span></div>
+      <div class="when">
+        <strong>17/09/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uel">UEFA Europa League</span>
+        <div class="teams">
+          <b class="spanish-team">Real Sociedad</b><span>VS</span><b>Bournemouth</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/10/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b>Lens</b><span>VS</span><b>Sporting CP</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/10/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b>Sabah</b><span>VS</span><b>Slavia Praha</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-seeded"><div class="euro-flags"><span class="euro-chip seeded">⭐ Cabeza de serie</span></div>
+      <div class="when">
+        <strong>13/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b class="seeded-team">Arsenal</b><span>VS</span><b>Lille</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-spanish euro-seeded"><div class="euro-flags"><span class="euro-chip spanish">🇪🇸 ESP</span><span class="euro-chip seeded">⭐ Cabeza de serie</span></div>
+      <div class="when">
+        <strong>13/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b class="spanish-team seeded-team">Atletico Madrid</b><span>VS</span><b class="seeded-team">Manchester United</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-seeded"><div class="euro-flags"><span class="euro-chip seeded">⭐ Cabeza de serie</span></div>
+      <div class="when">
+        <strong>13/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b class="seeded-team">Inter</b><span>VS</span><b>Club Brugge</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-spanish euro-seeded"><div class="euro-flags"><span class="euro-chip spanish">🇪🇸 ESP</span><span class="euro-chip seeded">⭐ Cabeza de serie</span></div>
+      <div class="when">
+        <strong>13/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b>Galatasaray</b><span>VS</span><b class="spanish-team seeded-team">Barcelona</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b>Leipzig</b><span>VS</span><b>PSV Eindhoven</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-seeded"><div class="euro-flags"><span class="euro-chip seeded">⭐ Cabeza de serie</span></div>
+      <div class="when">
+        <strong>13/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b>Viking</b><span>VS</span><b class="seeded-team">Bayern Munich</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-spanish euro-seeded"><div class="euro-flags"><span class="euro-chip spanish">🇪🇸 ESP</span><span class="euro-chip seeded">⭐ Cabeza de serie</span></div>
+      <div class="when">
+        <strong>13/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b class="spanish-team">Villarreal</b><span>VS</span><b class="seeded-team">Napoli</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>14/10/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b>Feyenoord</b><span>VS</span><b>Como</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-seeded"><div class="euro-flags"><span class="euro-chip seeded">⭐ Cabeza de serie</span></div>
+      <div class="when">
+        <strong>14/10/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b>LASK</b><span>VS</span><b class="seeded-team">Liverpool</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-spanish euro-seeded"><div class="euro-flags"><span class="euro-chip spanish">🇪🇸 ESP</span><span class="euro-chip seeded">⭐ Cabeza de serie</span></div>
+      <div class="when">
+        <strong>14/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b>Roma</b><span>VS</span><b class="spanish-team seeded-team">Real Madrid</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>14/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b>Aston Villa</b><span>VS</span><b>Fenerbahce</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>14/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b>Shakhtar Donetsk</b><span>VS</span><b>AEK Athens</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-seeded"><div class="euro-flags"><span class="euro-chip seeded">⭐ Cabeza de serie</span></div>
+      <div class="when">
+        <strong>14/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b>Bodo/Glimt</b><span>VS</span><b class="seeded-team">Borussia Dortmund</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-seeded"><div class="euro-flags"><span class="euro-chip seeded">⭐ Cabeza de serie</span></div>
+      <div class="when">
+        <strong>14/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b class="seeded-team">Manchester City</b><span>VS</span><b class="seeded-team">Paris Saint-Germain</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-spanish euro-seeded"><div class="euro-flags"><span class="euro-chip spanish">🇪🇸 ESP</span><span class="euro-chip seeded">⭐ Cabeza de serie</span></div>
+      <div class="when">
+        <strong>14/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b class="spanish-team">Real Betis</b><span>VS</span><b class="seeded-team">Porto</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>14/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 2</small>
+      </div>
+      <div class="fixture">
+        <span class="tag ucl">UEFA Champions League</span>
+        <div class="teams">
+          <b>Slovan Bratislava</b><span>VS</span><b>Stuttgart</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>Lugano</b><span>VS</span><b>Crvena Zvezda</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>Hajduk Split</b><span>VS</span><b>Ajax</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>Gent</b><span>VS</span><b>Aarhus</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>Egnatia</b><span>VS</span><b>Midtjylland</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>KuPS Kuopio</b><span>VS</span><b>Trabzonspor</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>Mjallby</b><span>VS</span><b>Inter Escaldes</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>Panathinaikos</b><span>VS</span><b>Borac</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>CSKA Sofia</b><span>VS</span><b>Monaco</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>Riga</b><span>VS</span><b>Kairat Almaty</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card euro-spanish"><div class="euro-flags"><span class="euro-chip spanish">🇪🇸 ESP</span></div>
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>18:45</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>Universitatea Craiova</b><span>VS</span><b class="spanish-team">Getafe</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>Atalanta</b><span>VS</span><b>Pafos</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>Brighton</b><span>VS</span><b>Kauno Zalgiris</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>Copenhagen</b><span>VS</span><b>Braga</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>Twente</b><span>VS</span><b>Thun</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>Hearts</b><span>VS</span><b>Nordsjaelland</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>Sint-Truidense</b><span>VS</span><b>Iberia Tbilisi</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>Freiburg</b><span>VS</span><b>Jablonec</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>15/10/2026</strong>
+        <span>21:00</span>
+        <small>Jornada 1</small>
+      </div>
+      <div class="fixture">
+        <span class="tag uecl">UEFA Conference League</span>
+        <div class="teams">
+          <b>Brann</b><span>VS</span><b>Lincoln Red Imps</b>
+        </div>
+      </div>
+      <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
+    </article></div>
+
+<div class="standings-box" id="euroStandingsBox">
+  <h3>📊 Clasificación general europea</h3>
+  <div class="standing-tabs" id="euroStandingTabs">
+    <button class="standing-tab active" data-stand="Champions League">Champions</button>
+    <button class="standing-tab" data-stand="Europa League">Europa League</button>
+    <button class="standing-tab" data-stand="Conference League">Conference</button>
+  </div>
+  <div id="euroStandingContent"><div class="standing-loading">Cargando clasificación europea…</div></div>
+  <div class="standing-updated">Actualización automática diaria</div>
+</div>
+</section>
+
+<section class="panel motor-panel" id="motor">
+<h2>Fórmula 1 + MotoGP</h2>
+<div class="cards"><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>15:00</span>
+        <small>Gran Premio</small>
+      </div>
+      <div class="fixture">
+        <span class="tag f1">Fórmula 1</span>
+        <div class="teams">
+          <b>GP de España · Madrid (MADRING)</b><span>VS</span><b></b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN F1 · Telecinco / Mediaset</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>13/09/2026</strong>
+        <span>Horario pendiente</span>
+        <small>Gran Premio</small>
+      </div>
+      <div class="fixture">
+        <span class="tag motogp">MotoGP</span>
+        <div class="teams">
+          <b>GP de San Marino · Misano</b><span>VS</span><b></b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>20/09/2026</strong>
+        <span>Horario pendiente</span>
+        <small>Gran Premio</small>
+      </div>
+      <div class="fixture">
+        <span class="tag motogp">MotoGP</span>
+        <div class="teams">
+          <b>GP de Austria · Spielberg</b><span>VS</span><b></b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>26/09/2026</strong>
+        <span>Horario pendiente</span>
+        <small>Gran Premio</small>
+      </div>
+      <div class="fixture">
+        <span class="tag f1">Fórmula 1</span>
+        <div class="teams">
+          <b>GP de Azerbaiyán · Bakú</b><span>VS</span><b></b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN F1</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>04/10/2026</strong>
+        <span>Horario pendiente</span>
+        <small>Gran Premio</small>
+      </div>
+      <div class="fixture">
+        <span class="tag f1">Fórmula 1</span>
+        <div class="teams">
+          <b>GP de Baréin · Sakhir</b><span>VS</span><b></b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN F1</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>04/10/2026</strong>
+        <span>Horario pendiente</span>
+        <small>Gran Premio</small>
+      </div>
+      <div class="fixture">
+        <span class="tag motogp">MotoGP</span>
+        <div class="teams">
+          <b>GP de Japón · Motegi</b><span>VS</span><b></b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>Horario pendiente</span>
+        <small>Gran Premio</small>
+      </div>
+      <div class="fixture">
+        <span class="tag f1">Fórmula 1</span>
+        <div class="teams">
+          <b>GP de Singapur · Marina Bay</b><span>VS</span><b></b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN F1</div>
+    </article><article class="match-card">
+      <div class="when">
+        <strong>11/10/2026</strong>
+        <span>Horario pendiente</span>
+        <small>Gran Premio</small>
+      </div>
+      <div class="fixture">
+        <span class="tag motogp">MotoGP</span>
+        <div class="teams">
+          <b>GP de Indonesia · Mandalika</b><span>VS</span><b></b>
+        </div>
+      </div>
+      <div class="tv">📺 DAZN</div>
+    </article></div>
+</section>
+</div>
+</div>
+
+<script>
+(function(){
+  const SOURCES = {
+    "LaLiga": {
+      urls:[
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/es.1.json",
+        "https://cdn.jsdelivr.net/gh/openfootball/football.json@master/2026-27/es.1.json"
+      ],
+      espn:"esp.1"
+    },
+    "Premier League": {
+      urls:[
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/en.1.json",
+        "https://cdn.jsdelivr.net/gh/openfootball/football.json@master/2026-27/en.1.json"
+      ],
+      espn:"eng.1"
+    },
+    "Bundesliga": {
+      urls:[
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/de.1.json",
+        "https://cdn.jsdelivr.net/gh/openfootball/football.json@master/2026-27/de.1.json"
+      ],
+      espn:"ger.1"
+    },
+    "Serie A": {
+      urls:[
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/it.1.json",
+        "https://cdn.jsdelivr.net/gh/openfootball/football.json@master/2026-27/it.1.json"
+      ],
+      espn:"ita.1"
+    },
+    "Ligue 1": {
+      urls:[
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/fr.1.json",
+        "https://cdn.jsdelivr.net/gh/openfootball/football.json@master/2026-27/fr.1.json"
+      ],
+      espn:"fra.1"
+    }
+  };
+
+  const cache = {};
+
+  function esc(s){
+    return String(s ?? "").replace(/[&<>"']/g, c => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    })[c]);
+  }
+  function fmtDate(iso){
+    if(!iso) return "Fecha pendiente";
+    const p=iso.split("-");
+    return p.length===3 ? `${p[2]}/${p[1]}/${p[0]}` : iso;
+  }
+  function roundNumber(v){
+    const m=String(v||"").match(/(\d+)/);
+    return m ? Number(m[1]) : null;
+  }
+  function timeText(match){
+    if(!match.time) return "Horario pendiente";
+    return match.time;
+  }
+  async function fetchJson(url){
+    const r=await fetch(url,{cache:"no-store"});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    return r.json();
+  }
+  function espnRound(ev){
+    const c=ev.competitions?.[0] || {};
+    const wk=c.week?.number ?? ev.week?.number ?? null;
+    if(wk) return "Matchday "+wk;
+    return "";
+  }
+  function espnToMatch(ev){
+    const c=ev.competitions?.[0] || {};
+    const competitors=c.competitors || [];
+    const home=competitors.find(x=>x.homeAway==="home");
+    const away=competitors.find(x=>x.homeAway==="away");
+    const dt=new Date(ev.date);
+    const date=dt.toLocaleDateString("en-CA",{timeZone:"Europe/Madrid"});
+    const time=dt.toLocaleTimeString("es-ES",{timeZone:"Europe/Madrid",hour:"2-digit",minute:"2-digit",hour12:false});
+    return {
+      round:espnRound(ev),
+      date,
+      time,
+      team1:home?.team?.displayName || home?.team?.shortDisplayName || "Local",
+      team2:away?.team?.displayName || away?.team?.shortDisplayName || "Visitante"
+    };
+  }
+  async function fetchEspnSeason(slug){
+    const url=`https://site.api.espn.com/apis/site/v2/sports/soccer/${slug}/scoreboard?dates=20260801-20270630`;
+    const data=await fetchJson(url);
+    return (data.events||[]).map(espnToMatch);
+  }
+  function assignRoundsByDate(matches,maxRounds){
+    // Si la fuente no trae jornada, agrupamos cronológicamente en bloques del tamaño de la liga.
+    const sorted=[...matches].sort((a,b)=>String(a.date+(a.time||"")).localeCompare(String(b.date+(b.time||""))));
+    const perRound = maxRounds===34 ? 9 : 10;
+    sorted.forEach((m,i)=>{
+      if(!roundNumber(m.round)) m.round="Matchday "+(Math.floor(i/perRound)+1);
+    });
+    return sorted;
+  }
+  async function getSeason(league){
+    if(cache[league]) return cache[league];
+    const cfg=SOURCES[league];
+    if(!cfg) return [];
+    for(const url of cfg.urls){
+      try{
+        const data=await fetchJson(url);
+        const matches=Array.isArray(data.matches) ? data.matches : [];
+        if(matches.length){
+          cache[league]=matches;
+          return matches;
+        }
+      }catch(e){}
+    }
+    try{
+      let matches=await fetchEspnSeason(cfg.espn);
+      if(matches.length){
+        const max=Number(document.querySelector(`.full-calendar[data-league="${league}"]`)?.dataset.rounds || 38);
+        matches=assignRoundsByDate(matches,max);
+        cache[league]=matches;
+        return matches;
+      }
+    }catch(e){}
+    return [];
+  }
+  function matchCard(m,tv,league){
+    const clsMap={"LaLiga":"laliga","Premier League":"premier","Bundesliga":"bundesliga","Serie A":"seriea","Ligue 1":"ligue1"};
+    return `<div class="season-match" style="padding-top:28px">
+      <span class="tag ${clsMap[league]||""}">${esc(league)}</span>
+      <div class="season-when">
+        <strong>${fmtDate(m.date)}</strong>
+        <span>${esc(timeText(m))}</span>
+      </div>
+      <div class="season-teams">
+        <b>${esc(m.team1||m.home||"Local")}</b>
+        <i>VS</i>
+        <b>${esc(m.team2||m.away||"Visitante")}</b>
+      </div>
+      <div class="season-tv">📺 ${esc(tv)}</div>
+    </div>`;
+  }
+  async function showRound(box,n){
+    const league=box.dataset.league;
+    const tv=box.dataset.tv;
+    const content=box.querySelector(".season-content");
+    box.querySelectorAll(".round-btn").forEach(b=>b.classList.toggle("active",Number(b.dataset.round)===n));
+    content.innerHTML='<div class="season-loading">Cargando Jornada '+n+'…</div>';
+    const all=await getSeason(league);
+    if(!all.length){
+      content.innerHTML='<div class="season-error">No se ha podido cargar el calendario completo desde la fuente externa. La vista general y las jornadas ya incorporadas siguen disponibles.</div>';
+      return;
+    }
+    const rows=all.filter(m=>roundNumber(m.round)===n)
+      .sort((a,b)=>String(a.date+(a.time||"99:99")).localeCompare(String(b.date+(b.time||"99:99"))));
+    if(!rows.length){
+      content.innerHTML='<div class="season-error">No hay partidos publicados para esta jornada.</div>';
+      return;
+    }
+    content.innerHTML=`<div class="season-round-head">Jornada ${n} · ${rows.length} partidos</div>`+rows.map(m=>matchCard(m,tv,league)).join("");
+  }
+
+  document.querySelectorAll(".full-calendar").forEach(box=>{
+    const max=Number(box.dataset.rounds);
+    const grid=box.querySelector(".round-grid");
+    grid.innerHTML=Array.from({length:max},(_,i)=>`<button type="button" class="round-btn" data-round="${i+1}">J${i+1}</button>`).join("");
+    grid.querySelectorAll(".round-btn").forEach(btn=>{
+      btn.addEventListener("click",()=>showRound(box,Number(btn.dataset.round)));
+    });
+  });
+})();
+</script>
+
+
+<script>
+(function(){
+  const STANDINGS = {
+    "LaLiga":"esp.1",
+    "Premier League":"eng.1",
+    "Bundesliga":"ger.1",
+    "Serie A":"ita.1",
+    "Ligue 1":"fra.1",
+    "Champions League":"uefa.champions",
+    "Europa League":"uefa.europa",
+    "Conference League":"uefa.europa.conf"
+  };
+  const standingCache={};
+
+  function sEsc(s){
+    return String(s??"").replace(/[&<>"']/g,c=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    })[c]);
+  }
+
+  function statValue(stats,names){
+    for(const n of names){
+      const s=(stats||[]).find(x=>x.name===n || x.abbreviation===n);
+      if(s && s.value!==undefined) return s.value;
+    }
+    return "";
+  }
+
+  function normalizeStandings(data){
+    // ESPN standings responses can use children[] or a direct standings object.
+    const groups = data.children || [];
+    let entries=[];
+    if(groups.length){
+      for(const g of groups){
+        const e=g.standings?.entries || [];
+        if(e.length>entries.length) entries=e;
+      }
+    } else {
+      entries=data.standings?.entries || [];
+    }
+    return entries.map((e,i)=>{
+      const s=e.stats||[];
+      return {
+        pos: statValue(s,["rank","RK"]) || i+1,
+        team:e.team?.displayName || e.team?.shortDisplayName || "Equipo",
+        logo:e.team?.logos?.[0]?.href || "",
+        pj:statValue(s,["gamesPlayed","GP"]),
+        g:statValue(s,["wins","W"]),
+        e:statValue(s,["ties","draws","D"]),
+        p:statValue(s,["losses","L"]),
+        gf:statValue(s,["pointsFor","goalsFor","GF"]),
+        gc:statValue(s,["pointsAgainst","goalsAgainst","GA"]),
+        dg:statValue(s,["pointDifferential","goalDifference","GD"]),
+        pts:statValue(s,["points","PTS"])
+      };
+    });
+  }
+
+  async function getStandings(name){
+    if(standingCache[name]) return standingCache[name];
+    const slug=STANDINGS[name];
+    if(!slug) return [];
+    const urls=[
+      `https://site.api.espn.com/apis/v2/sports/soccer/${slug}/standings`,
+      `https://site.web.api.espn.com/apis/v2/sports/soccer/${slug}/standings?region=es&lang=es`
+    ];
+    for(const url of urls){
+      try{
+        const r=await fetch(url,{cache:"no-store"});
+        if(!r.ok) continue;
+        const data=await r.json();
+        const rows=normalizeStandings(data);
+        if(rows.length){
+          standingCache[name]=rows;
+          return rows;
+        }
+      }catch(e){}
+    }
+    return [];
+  }
+
+  function standingTable(rows){
+    if(!rows.length){
+      return '<div class="standing-error">Clasificación no disponible en este momento.</div>';
+    }
+    return `<div class="standing-wrap"><table class="standing-table">
+      <thead><tr>
+        <th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th><th>PTS</th>
+      </tr></thead>
+      <tbody>${rows.map(r=>`<tr>
+        <td class="standing-pos">${sEsc(r.pos)}</td>
+        <td><span class="standing-team">${r.logo?`<img src="${sEsc(r.logo)}" alt="">`:""}${sEsc(r.team)}</span></td>
+        <td>${sEsc(r.pj)}</td><td>${sEsc(r.g)}</td><td>${sEsc(r.e)}</td><td>${sEsc(r.p)}</td>
+        <td>${sEsc(r.gf)}</td><td>${sEsc(r.gc)}</td><td>${sEsc(r.dg)}</td>
+        <td class="standing-pts">${sEsc(r.pts)}</td>
+      </tr>`).join("")}</tbody>
+    </table></div>`;
+  }
+
+  async function renderStanding(name,target){
+    target.innerHTML='<div class="standing-loading">Cargando '+sEsc(name)+'…</div>';
+    const rows=await getStandings(name);
+    target.innerHTML=standingTable(rows);
+  }
+
+  function wireTabs(containerId,targetId){
+    const box=document.getElementById(containerId);
+    const target=document.getElementById(targetId);
+    if(!box || !target) return;
+    const buttons=[...box.querySelectorAll(".standing-tab")];
+    buttons.forEach(btn=>btn.addEventListener("click",()=>{
+      buttons.forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      renderStanding(btn.dataset.stand,target);
+    }));
+    if(buttons[0]) renderStanding(buttons[0].dataset.stand,target);
+  }
+
+  wireTabs("leagueStandingTabs","leagueStandingContent");
+  wireTabs("euroStandingTabs","euroStandingContent");
+})();
+</script>
+
+
+
+
+
+<script>
+(function(){
+  const btn=document.getElementById("manualRefreshBtn");
+  if(!btn) return;
+  btn.addEventListener("click", async ()=>{
+    btn.disabled=true;
+    const old=btn.textContent;
+    btn.textContent="Actualizando…";
+    try{
+      // Folio puede bloquear peticiones externas. La prueba se hace contra LaLiga.
+      const url="https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard";
+      const r=await fetch(url,{cache:"no-store"});
+      if(!r.ok) throw new Error();
+      alert("Conexión disponible, pero esta versión local no puede garantizar la actualización completa de todas las ligas.");
+    }catch(e){
+      alert("Folio bloquea la actualización online. Se mantienen los últimos resultados integrados en el archivo.");
+    }finally{
+      btn.disabled=false;
+      btn.textContent=old;
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
