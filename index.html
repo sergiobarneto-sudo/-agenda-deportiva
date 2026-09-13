@@ -633,6 +633,122 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
 .full-calendar .round-grid{display:none!important}
 .full-calendar .season-note{display:none!important}
 
+
+/* v42 · corrección visual móvil + escudos, sin tocar filtros ni estructura */
+.match-card,.season-match{
+  overflow:hidden;
+}
+.match-card .when,.season-when{
+  min-width:0;
+}
+.match-card .fixture,.season-teams{
+  min-width:0;
+}
+.team-with-crest{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+}
+.team-with-crest img{
+  width:24px;height:24px;object-fit:contain;flex:0 0 24px;
+}
+.team-with-crest .crest-fallback{
+  width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;
+  flex:0 0 24px;border-radius:50%;background:#f2f4f7;border:1px solid var(--line);
+  font-size:.72rem;
+}
+.team-with-crest b{
+  min-width:0;
+  white-space:normal!important;
+  overflow-wrap:anywhere;
+  word-break:normal;
+  line-height:1.18!important;
+}
+
+@media(max-width:760px){
+  .match-card,.season-match{
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+    padding:42px 12px 12px!important;
+    align-items:start!important;
+  }
+  .match-card .when,.season-when{
+    display:grid!important;
+    grid-template-columns:auto auto 1fr;
+    gap:8px!important;
+    align-items:center;
+    width:100%;
+  }
+  .match-card .when strong,.season-when strong{
+    font-size:.92rem!important;
+    white-space:nowrap;
+  }
+  .match-card .when span,.season-when span{
+    font-size:.78rem!important;
+    white-space:nowrap;
+  }
+  .match-card .when small{
+    justify-self:end;
+    white-space:nowrap;
+  }
+  .match-card .fixture{
+    width:100%;
+  }
+  .match-card .teams,.season-teams{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+    width:100%;
+  }
+  .match-card .teams>span,.season-teams>i{
+    display:none!important;
+  }
+  .match-card .teams>b,.season-teams>b{
+    display:block;
+    width:100%;
+    font-size:.88rem!important;
+    line-height:1.18!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere;
+  }
+  .team-with-crest{width:100%}
+  .match-card .tv,.season-tv{
+    grid-column:1!important;
+    width:100%;
+    text-align:left!important;
+    margin-top:2px;
+  }
+  .match-card .tag,.season-match .tag{
+    top:9px!important;
+    right:10px!important;
+    max-width:62%;
+    white-space:normal!important;
+    text-align:center;
+    line-height:1.05;
+  }
+}
+
+@media(max-width:430px){
+  .match-card,.season-match{
+    padding:42px 10px 10px!important;
+  }
+  .match-card .when,.season-when{
+    grid-template-columns:1fr auto;
+    gap:4px 8px!important;
+  }
+  .match-card .when small{
+    grid-column:1/-1;
+    justify-self:start;
+  }
+  .team-with-crest img,.team-with-crest .crest-fallback{
+    width:22px;height:22px;flex-basis:22px;
+  }
+  .team-with-crest b,.match-card .teams>b,.season-teams>b{
+    font-size:.82rem!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -5507,6 +5623,11 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
     }catch(e){}
     return [];
   }
+  function teamWithCrest(name,logo){
+    const found=logo || (window.AGENDA_TEAM_LOGOS && window.AGENDA_TEAM_LOGOS[name]) || "";
+    const media=found ? `<img src="${esc(found)}" alt="" onerror="this.style.display='none'">` : `<span class="crest-fallback">⚽</span>`;
+    return `<span class="team-with-crest">${media}<b>${esc(name)}</b></span>`;
+  }
   function matchCard(m,tv,league){
     const clsMap={"LaLiga":"laliga","Premier League":"premier","Bundesliga":"bundesliga","Serie A":"seriea","Ligue 1":"ligue1"};
     return `<div class="season-match" style="padding-top:28px">
@@ -5516,9 +5637,9 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
         <span>${esc(timeText(m))}</span>
       </div>
       <div class="season-teams">
-        <b>${esc(m.team1||m.home||"Local")}</b>
+        ${teamWithCrest(m.team1||m.home||"Local")}
         <i>VS</i>
-        <b>${esc(m.team2||m.away||"Visitante")}</b>
+        ${teamWithCrest(m.team2||m.away||"Visitante")}
       </div>
       <div class="season-tv">📺 ${esc(tv)}</div>
     </div>`;
@@ -5603,6 +5724,12 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
     }).format(d);
   }
 
+  function teamWithCrest(name,logo){
+    const found=logo || (window.AGENDA_TEAM_LOGOS && window.AGENDA_TEAM_LOGOS[name]) || "";
+    const media=found ? `<img src="${esc(found)}" alt="" onerror="this.style.display='none'">` : `<span class="crest-fallback">⚽</span>`;
+    return `<span class="team-with-crest">${media}<b>${esc(name)}</b></span>`;
+  }
+
   function matchCard(m){
     const meta=leagueMeta[m.key] || {name:m.league||"",tv:m.tv||""};
     const round=m.round ? `Jornada ${m.round}` : "Horario confirmado/provisional";
@@ -5614,7 +5741,7 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
       </div>
       <div class="fixture">
         <span class="tag ${esc(m.key)}">${esc(meta.name)}</span>
-        <div class="teams"><b>${esc(m.home)}</b><span>VS</span><b>${esc(m.away)}</b></div>
+        <div class="teams">${teamWithCrest(m.home,m.homeLogo)}<span>VS</span>${teamWithCrest(m.away,m.awayLogo)}</div>
       </div>
       <div class="tv">📺 ${esc(m.tv || "TV pendiente de confirmar")}</div>
     </article>`;
@@ -5632,8 +5759,8 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
       <div class="fixture">
         <span class="tag ${esc(m.key)}">${esc(m.league)}</span>
         <div class="teams">
-          <div class="team-line"><b>${esc(m.home)}</b><span class="team-score">${esc(m.homeScore)}</span></div>
-          <div class="team-line"><b>${esc(m.away)}</b><span class="team-score">${esc(m.awayScore)}</span></div>
+          <div class="team-line">${teamWithCrest(m.home,m.homeLogo)}<span class="team-score">${esc(m.homeScore)}</span></div>
+          <div class="team-line">${teamWithCrest(m.away,m.awayLogo)}<span class="team-score">${esc(m.awayScore)}</span></div>
         </div>
       </div>
       <div class="score">${esc(m.homeScore)} - ${esc(m.awayScore)}</div>
@@ -5661,7 +5788,7 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
       </div>
       <div class="fixture">
         <span class="tag ${esc(m.key)}">${esc(m.league)}</span>
-        <div class="teams"><b>${esc(m.home)}</b><span>VS</span><b>${esc(m.away)}</b></div>
+        <div class="teams">${teamWithCrest(m.home,m.homeLogo)}<span>VS</span>${teamWithCrest(m.away,m.awayLogo)}</div>
       </div>
       <div class="tv">📺 Movistar Plus+ / Orange TV · según partido</div>
     </article>`;
@@ -5789,6 +5916,19 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
       const r=await fetch(`${DATA_URL}?v=${Date.now()}`,{cache:"no-store"});
       if(!r.ok) throw new Error(`HTTP ${r.status}`);
       const data=await r.json();
+      window.AGENDA_TEAM_LOGOS = window.AGENDA_TEAM_LOGOS || {};
+      Object.values(data.domestic||{}).forEach(comp=>{
+        ["results","current","future","upcoming"].forEach(bucket=>{
+          (comp[bucket]||[]).forEach(m=>{
+            if(m.home && m.homeLogo) window.AGENDA_TEAM_LOGOS[m.home]=m.homeLogo;
+            if(m.away && m.awayLogo) window.AGENDA_TEAM_LOGOS[m.away]=m.awayLogo;
+          });
+        });
+      });
+      (data.europe?.upcoming||[]).forEach(m=>{
+        if(m.home && m.homeLogo) window.AGENDA_TEAM_LOGOS[m.home]=m.homeLogo;
+        if(m.away && m.awayLogo) window.AGENDA_TEAM_LOGOS[m.away]=m.awayLogo;
+      });
       renderDomestic(data);
       renderResults(data);
       renderStandings(data);
