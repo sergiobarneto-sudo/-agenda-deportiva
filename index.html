@@ -701,7 +701,7 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
     gap:8px!important;
     width:100%;
   }
-  .match-card .teams>span,.season-teams>i{
+  .match-card .teams>span:not(.team-with-crest),.season-teams>i{
     display:none!important;
   }
   .match-card .teams>b,.season-teams>b{
@@ -746,6 +746,24 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
   }
   .team-with-crest b,.match-card .teams>b,.season-teams>b{
     font-size:.82rem!important;
+  }
+}
+
+
+/* v43 · FIX: mantener visibles los equipos con escudo en móvil */
+@media(max-width:760px){
+  .match-card .teams > .team-with-crest,
+  .season-teams > .team-with-crest{
+    display:flex!important;
+    width:100%;
+    min-width:0;
+  }
+  .match-card .teams > .team-with-crest b,
+  .season-teams > .team-with-crest b{
+    display:block!important;
+    color:var(--text)!important;
+    visibility:visible!important;
+    opacity:1!important;
   }
 }
 
