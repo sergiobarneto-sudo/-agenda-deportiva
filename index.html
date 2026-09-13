@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Agenda Deportiva 2026/27</title>
+<title>Agenda Deportiva 2026/27 · v46</title>
 <style>
 :root{--bg:#f4f7fb;--surface:#fff;--line:#e5e7eb;--text:#172033;--muted:#667085;--blue:#2563eb}
 *{box-sizing:border-box}
@@ -13,9 +13,9 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
 .main-radio,.filter-radio{position:absolute;opacity:0;pointer-events:none}
 .tabs,.filterbar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
 .tabs label,.filterbar label{padding:9px 12px;border-radius:10px;background:#eef2f6;color:#475467;font-weight:800;cursor:pointer}
-#tab-ligas:checked~.tabs label[for="tab-ligas"],#tab-resultados:checked~.tabs label[for="tab-resultados"],#tab-europa:checked~.tabs label[for="tab-europa"],#tab-motor:checked~.tabs label[for="tab-motor"]{background:#fff;color:var(--blue);box-shadow:0 2px 9px #0001}
+#tab-ligas:checked~.tabs label[for="tab-ligas"],#tab-resultados:checked~.tabs label[for="tab-resultados"],#tab-europa:checked~.tabs label[for="tab-europa"],#tab-motor:checked~.tabs label[for="tab-motor"],#tab-clasificacion:checked~.tabs label[for="tab-clasificacion"]{background:#fff;color:var(--blue);box-shadow:0 2px 9px #0001}
 .panel{display:none;background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px;margin-bottom:14px}
-#tab-ligas:checked~.panels #ligas,#tab-resultados:checked~.panels #resultados,#tab-europa:checked~.panels #europa,#tab-motor:checked~.panels #motor{display:block}
+#tab-ligas:checked~.panels #ligas,#tab-resultados:checked~.panels #resultados,#tab-europa:checked~.panels #europa,#tab-motor:checked~.panels #motor,#tab-clasificacion:checked~.panels #clasificacion{display:block}
 .panel h2{font-size:1.05rem;margin:0 0 8px}
 .note{font-size:.84rem;color:var(--muted);margin-bottom:10px}
 .league-view{display:none}
@@ -749,23 +749,40 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
   }
 }
 
+
+/* v46 · clasificación en pestaña superior y limpieza de calendarios redundantes */
+#clasificacion .standings-box{margin-top:14px}
+#clasificacion .standings-box:first-of-type{margin-top:8px;border-top:0;padding-top:0}
+#clasificacion #euroStandingsBox{margin-top:20px}
+@media(max-width:520px){
+  #clasificacion .standing-tabs{gap:5px}
+  #clasificacion .standing-tab{flex:1 1 auto}
+}
+
+
+/* v47 · estado y calidad de clasificaciones */
+.standing-source-note{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 10px;padding:8px 10px;border:1px solid #dbeafe;background:#f8fbff;border-radius:10px;font-size:.7rem;color:#475467}
+.standing-source-note b{color:#1d4ed8}.standing-source-ok{color:#067647;font-weight:850}.standing-source-warn{color:#b54708;font-weight:850}
+
 </style>
 </head>
 <body>
 <div class="page">
-<h1>Agenda Deportiva 2026/27</h1>
+<h1>Agenda Deportiva 2026/27 <small style="font-size:.55em;color:#98a2b3">v47</small></h1>
 <div class="sub">Vista general por fecha y hora · filtra una liga solo cuando quieras verla por separado.</div>
 
 <input class="main-radio" type="radio" name="main" id="tab-ligas" checked>
 <input class="main-radio" type="radio" name="main" id="tab-resultados">
 <input class="main-radio" type="radio" name="main" id="tab-europa">
 <input class="main-radio" type="radio" name="main" id="tab-motor">
+<input class="main-radio" type="radio" name="main" id="tab-clasificacion">
 
 <div class="tabs">
 <label for="tab-ligas">⚽ Ligas</label>
 <label for="tab-resultados">✅ Resultados</label>
 <label for="tab-europa">🏆 Europa</label>
 <label for="tab-motor">🏁 Motor</label>
+<label for="tab-clasificacion">📊 Clasificación</label>
 </div>
 
 <div class="panels">
@@ -3275,14 +3292,7 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
       <div class="tv">📺 DAZN</div>
     </article></div>
             </details></div>
-<div class="full-calendar" id="calendar-premier-league" data-league="Premier League" data-rounds="38" data-tv="DAZN">
-  <div class="full-calendar-title">
-    <strong>📅 Calendario completo 2026/27</strong>
-    <span class="season-note">Jornadas 1–38 · doble fuente de datos</span>
-  </div>
-  <div class="round-grid" aria-label="Jornadas"></div>
-  <div class="season-content"><div class="season-loading">Calendario completo preparado. Selecciona una jornada.</div></div>
-</div>
+
 <div class="league-view view-bundesliga"><details class="round" open>
               <summary>Jornada 3 · 2 partidos</summary>
               <div class="cards"><article class="match-card">
@@ -3553,14 +3563,7 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
       <div class="tv">📺 DAZN</div>
     </article></div>
             </details></div>
-<div class="full-calendar" id="calendar-bundesliga" data-league="Bundesliga" data-rounds="34" data-tv="DAZN">
-  <div class="full-calendar-title">
-    <strong>📅 Calendario completo 2026/27</strong>
-    <span class="season-note">Jornadas 1–34 · doble fuente de datos</span>
-  </div>
-  <div class="round-grid" aria-label="Jornadas"></div>
-  <div class="season-content"><div class="season-loading">Calendario completo preparado. Selecciona una jornada.</div></div>
-</div>
+
 <div class="league-view view-serie-a"><details class="round" open>
               <summary>Jornada 4 · 7 partidos</summary>
               <div class="cards"><article class="match-card">
@@ -3922,14 +3925,7 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
       <div class="tv">📺 DAZN</div>
     </article></div>
             </details></div>
-<div class="full-calendar" id="calendar-serie-a" data-league="Serie A" data-rounds="38" data-tv="DAZN">
-  <div class="full-calendar-title">
-    <strong>📅 Calendario completo 2026/27</strong>
-    <span class="season-note">Jornadas 1–38 · doble fuente de datos</span>
-  </div>
-  <div class="round-grid" aria-label="Jornadas"></div>
-  <div class="season-content"><div class="season-loading">Calendario completo preparado. Selecciona una jornada.</div></div>
-</div>
+
 <div class="league-view view-ligue-1"><details class="round" open>
               <summary>Jornada 4 · 7 partidos</summary>
               <div class="cards"><article class="match-card">
@@ -4265,28 +4261,10 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
       <div class="tv">📺 DAZN</div>
     </article></div>
             </details></div>
-<div class="full-calendar" id="calendar-ligue-1" data-league="Ligue 1" data-rounds="34" data-tv="DAZN">
-  <div class="full-calendar-title">
-    <strong>📅 Calendario completo 2026/27</strong>
-    <span class="season-note">Jornadas 1–34 · doble fuente de datos</span>
-  </div>
-  <div class="round-grid" aria-label="Jornadas"></div>
-  <div class="season-content"><div class="season-loading">Calendario completo preparado. Selecciona una jornada.</div></div>
-</div>
+
 </div>
 
-<div class="standings-box" id="leagueStandingsBox">
-  <h3>📊 Clasificación general</h3>
-  <div class="standing-tabs" id="leagueStandingTabs">
-    <button class="standing-tab active" data-stand="LaLiga">LaLiga</button>
-    <button class="standing-tab" data-stand="Premier League">Premier</button>
-    <button class="standing-tab" data-stand="Bundesliga">Bundesliga</button>
-    <button class="standing-tab" data-stand="Serie A">Serie A</button>
-    <button class="standing-tab" data-stand="Ligue 1">Ligue 1</button>
-  </div>
-  <div id="leagueStandingContent"><div class="standing-loading">Cargando clasificación…</div></div>
-  <div class="standing-updated">Actualización automática diaria</div>
-</div>
+
 </section>
 
 <section class="panel" id="resultados">
@@ -5374,6 +5352,26 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
       <div class="tv">📺 Movistar Plus+ · Liga de Campeones por M+ / Orange TV</div>
     </article></div>
 
+
+</section>
+
+
+<section class="panel" id="clasificacion">
+<h2>📊 Clasificaciones generales</h2>
+<div class="note">Clasificaciones generales actualizadas automáticamente. Se prioriza el dato estructurado de ESPN y se contrasta con fuentes oficiales de cada competición cuando están disponibles.</div>
+<div class="standing-source-note"><span><b>Fuentes:</b> ESPN + contraste con webs oficiales</span><span id="standingQuality" class="standing-source-ok">Actualización automática activa</span></div>
+<div class="standings-box" id="leagueStandingsBox">
+  <h3>📊 Clasificación general</h3>
+  <div class="standing-tabs" id="leagueStandingTabs">
+    <button class="standing-tab active" data-stand="LaLiga">LaLiga</button>
+    <button class="standing-tab" data-stand="Premier League">Premier</button>
+    <button class="standing-tab" data-stand="Bundesliga">Bundesliga</button>
+    <button class="standing-tab" data-stand="Serie A">Serie A</button>
+    <button class="standing-tab" data-stand="Ligue 1">Ligue 1</button>
+  </div>
+  <div id="leagueStandingContent"><div class="standing-loading">Cargando clasificación…</div></div>
+  <div class="standing-updated" id="leagueStandingUpdated">Actualización automática · aproximadamente cada 15 min</div>
+</div>
 <div class="standings-box" id="euroStandingsBox">
   <h3>📊 Clasificación general europea</h3>
   <div class="standing-tabs" id="euroStandingTabs">
@@ -5382,7 +5380,7 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
     <button class="standing-tab" data-stand="Conference League">Conference</button>
   </div>
   <div id="euroStandingContent"><div class="standing-loading">Cargando clasificación europea…</div></div>
-  <div class="standing-updated">Actualización automática diaria</div>
+  <div class="standing-updated" id="euroStandingUpdated">Actualización automática · aproximadamente cada 15 min</div>
 </div>
 </section>
 
@@ -5875,6 +5873,13 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
 
   function renderStandings(data){
     window.__agendaStandings=data.standings || {};
+    const expected={laliga:20,premier:20,bundesliga:18,seriea:20,ligue1:18};
+    const incomplete=Object.entries(expected).filter(([k,n])=>(data.standings?.[k]||[]).length!==n);
+    const quality=document.getElementById("standingQuality");
+    if(quality){
+      quality.className=incomplete.length?"standing-source-warn":"standing-source-ok";
+      quality.textContent=incomplete.length?"Alguna tabla está pendiente de completar":"5 ligas completas y actualizadas";
+    }
     const leagueButtons=[...document.querySelectorAll("#leagueStandingTabs .standing-tab")];
     const leagueTarget=document.getElementById("leagueStandingContent");
     function renderLeague(btn){
@@ -5885,7 +5890,10 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
         "Serie A":"seriea","Ligue 1":"ligue1"
       }[name];
       const rows=data.standings?.[key] || [];
-      if(rows.length) leagueTarget.innerHTML=standingTable(rows);
+      leagueTarget.innerHTML = rows.length ? standingTable(rows) : '<div class="standing-error">Clasificación pendiente de actualización.</div>';
+      const meta=data.standings_meta?.[key];
+      const upd=document.getElementById("leagueStandingUpdated");
+      if(upd && meta){ upd.textContent=`Última actualización: ${meta.updated || "pendiente"} · ${meta.source || "fuente deportiva"}`; }
     }
     leagueButtons.forEach(btn=>btn.onclick=()=>renderLeague(btn));
     if(leagueButtons[0]) renderLeague(leagueButtons[0]);
@@ -5896,7 +5904,10 @@ h1{margin:0 0 4px;font-size:1.35rem} .sub{color:var(--muted);font-size:.9rem;mar
       euroButtons.forEach(b=>b.classList.remove("active")); btn.classList.add("active");
       const key={"Champions League":"ucl","Europa League":"uel","Conference League":"uecl"}[btn.dataset.stand];
       const rows=data.standings?.[key] || [];
-      if(rows.length) euroTarget.innerHTML=standingTable(rows);
+      euroTarget.innerHTML = rows.length ? standingTable(rows) : '<div class="standing-error">Clasificación europea pendiente de actualización.</div>';
+      const meta=data.standings_meta?.[key];
+      const upd=document.getElementById("euroStandingUpdated");
+      if(upd && meta){ upd.textContent=`Última actualización: ${meta.updated || "pendiente"} · ${meta.source || "fuente deportiva"}`; }
     }
     euroButtons.forEach(btn=>btn.onclick=()=>renderEuro(btn));
     if(euroButtons[0]) renderEuro(euroButtons[0]);

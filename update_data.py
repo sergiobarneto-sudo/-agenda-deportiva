@@ -178,46 +178,59 @@ def stat_value(stats,names):
     return ""
 
 def standings(slug):
+    # Several ESPN variants are tried because the public endpoints occasionally
+    # differ by competition/region. Season is fixed explicitly to 2026/27.
     urls=[
-      f"https://site.api.espn.com/apis/v2/sports/soccer/{slug}/standings",
-      f"https://site.web.api.espn.com/apis/v2/sports/soccer/{slug}/standings?region=es&lang=es"
+      ("ESPN", f"https://site.web.api.espn.com/apis/v2/sports/soccer/{slug}/standings?region=es&lang=es&season=2026"),
+      ("ESPN", f"https://site.api.espn.com/apis/v2/sports/soccer/{slug}/standings?season=2026"),
+      ("ESPN", f"https://site.web.api.espn.com/apis/v2/sports/soccer/{slug}/standings?region=us&lang=en&season=2026")
     ]
-    data=None
-    for u in urls:
+    candidates=[]
+    for source,u in urls:
         try:
-            data=get_json(u); break
-        except Exception:
-            pass
-    if not data: return []
+            data=get_json(u)
+            groups=data.get("children") or []
+            entries=[]
+            if groups:
+                # Domestic leagues should expose one main table. For grouped UEFA
+                # competitions, keep the largest table returned by ESPN.
+                for g in groups:
+                    e=((g.get("standings") or {}).get("entries") or [])
+                    if len(e)>len(entries): entries=e
+            else:
+                entries=((data.get("standings") or {}).get("entries") or [])
+            if entries:
+                candidates.append((len(entries),source,entries))
+        except Exception as e:
+            print("Standings source error",slug,source,e)
 
-    groups=data.get("children") or []
-    entries=[]
-    if groups:
-        for g in groups:
-            e=((g.get("standings") or {}).get("entries") or [])
-            if len(e)>len(entries): entries=e
-    else:
-        entries=((data.get("standings") or {}).get("entries") or [])
+    if not candidates:
+        return [], {"source":"ESPN","updated":"pendiente","teams":0,"status":"error"}
 
+    # Prefer the most complete result.
+    _,source,entries=max(candidates,key=lambda x:x[0])
     out=[]
     for i,e in enumerate(entries):
         s=e.get("stats") or []
         team=e.get("team") or {}
         logos=team.get("logos") or []
+        def num(names,default=""):
+            return stat_value(s,names) if s else default
         out.append({
-          "pos":stat_value(s,["rank","RK"]) or i+1,
+          "pos":num(["rank","RK"]) or i+1,
           "team":team.get("displayName") or team.get("shortDisplayName") or "Equipo",
-          "logo":logos[0].get("href","") if logos else "",
-          "pj":stat_value(s,["gamesPlayed","GP"]),
-          "g":stat_value(s,["wins","W"]),
-          "e":stat_value(s,["ties","draws","D"]),
-          "p":stat_value(s,["losses","L"]),
-          "gf":stat_value(s,["pointsFor","goalsFor","GF"]),
-          "gc":stat_value(s,["pointsAgainst","goalsAgainst","GA"]),
-          "dg":stat_value(s,["pointDifferential","goalDifference","GD"]),
-          "pts":stat_value(s,["points","PTS"])
+          "logo":logos[0].get("href","") if logos and isinstance(logos[0],dict) else "",
+          "pj":num(["gamesPlayed","GP"]),
+          "g":num(["wins","W"]),
+          "e":num(["ties","draws","D"]),
+          "p":num(["losses","L"]),
+          "gf":num(["pointsFor","goalsFor","GF"]),
+          "gc":num(["pointsAgainst","goalsAgainst","GA"]),
+          "dg":num(["pointDifferential","goalDifference","GD"]),
+          "pts":num(["points","PTS"])
         })
-    return out
+    stamp=datetime.datetime.now(ZoneInfo("Europe/Madrid")).strftime("%d/%m/%Y %H:%M")
+    return out, {"source":source,"updated":stamp,"teams":len(out),"status":"ok"}
 
 
 # ---------------- MOTOR ----------------
@@ -395,7 +408,7 @@ def motogp_data():
 
 out={
  "updated_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
- "domestic":{},"europe":{"upcoming":[]},"standings":{},"motor":{"f1":{},"motogp":{}}
+ "domestic":{},"europe":{"upcoming":[]},"standings":{},"standings_meta":{},"motor":{"f1":{},"motogp":{}}
 }
 
 for key,(name,slug,tv,max_rounds) in DOMESTIC.items():
@@ -405,10 +418,13 @@ for key,(name,slug,tv,max_rounds) in DOMESTIC.items():
         print("Domestic error",key,e)
         out["domestic"][key]={"name":name,"round":None,"results":[],"current":[],"future":[],"upcoming":[]}
     try:
-        out["standings"][key]=standings(slug)
+        rows,meta=standings(slug)
+        out["standings"][key]=rows
+        out["standings_meta"][key]=meta
     except Exception as e:
         print("Standings error",key,e)
         out["standings"][key]=[]
+        out["standings_meta"][key]={"source":"ESPN","updated":"pendiente","teams":0,"status":"error"}
 
 euro=[]
 for key,(name,slug) in EUROPE.items():
@@ -424,10 +440,13 @@ for key,(name,slug) in EUROPE.items():
     except Exception as e:
         print("Europe error",key,e)
     try:
-        out["standings"][key]=standings(slug)
+        rows,meta=standings(slug)
+        out["standings"][key]=rows
+        out["standings_meta"][key]=meta
     except Exception as e:
         print("Europe standings error",key,e)
         out["standings"][key]=[]
+        out["standings_meta"][key]={"source":"ESPN","updated":"pendiente","teams":0,"status":"error"}
 
 euro.sort(key=lambda x:x["date"])
 out["europe"]["upcoming"]=euro
